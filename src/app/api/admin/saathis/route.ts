@@ -1,26 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+
+const saathiAdminInclude = {
+  workspace: true,
+  customers: {
+    select: { id: true }
+  },
+  commissions: {
+    select: { amount: true }
+  }
+} satisfies Prisma.SaathiInclude;
+
+type SaathiAdminRow = Prisma.SaathiGetPayload<{ include: typeof saathiAdminInclude }>;
 
 // GET all Saathis for Admin view
 export async function GET(req: NextRequest) {
   try {
-    const saathis = await prisma.saathi.findMany({
-      include: {
-        workspace: true,
-        customers: {
-          select: { id: true }
-        },
-        commissions: {
-          select: { amount: true }
-        }
-      },
+    const saathis: SaathiAdminRow[] = await prisma.saathi.findMany({
+      include: saathiAdminInclude,
       orderBy: {
         joinedDate: 'desc'
       }
     });
 
     // Format output with computed values (customers count, total earnings)
-    const formatted = saathis.map(s => {
+    const formatted = saathis.map((s) => {
       const customersCount = s.customers.length;
       const totalEarnings = s.commissions.reduce((acc, c) => acc + c.amount, 0);
       
