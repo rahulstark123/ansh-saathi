@@ -56,7 +56,7 @@ const TRANSLATIONS = {
     applyFoundingSaathi: "Apply to become a Founding Saathi",
     applyDesc: "Tell us about yourself and why you want to walk this journey with ANSH. We review every application and reach out with next steps for training and onboarding.",
     applyCheck1: "No joining fee",
-    applyCheck2: "First 20 founding Saathis only",
+    applyCheck2: "First 20 founding Saathis only will get 40% commission for first year",
     applyCheck3: "Training and sales materials included",
     formFullName: "Full Name *",
     formFullNamePlaceholder: "Your full name",
@@ -70,8 +70,8 @@ const TRANSLATIONS = {
     formCityPlaceholder: "Your city",
     formWebsite: "Website / LinkedIn Profile",
     formWebsitePlaceholder: "Website or LinkedIn URL",
-    formBusinessType: "Business Type *",
-    formBusinessTypePlaceholder: "Select business type",
+    formBusinessType: "Profession Type *",
+    formBusinessTypePlaceholder: "Select profession type",
     formExperience: "Experience in Sales or Consulting",
     formExperiencePlaceholder: "Briefly share your relevant experience",
     formWhySaathi: "Why do you want to become an ANSH Saathi? *",
@@ -92,7 +92,7 @@ const TRANSLATIONS = {
       businessType: "Please select your business type",
       whyPartner: "Please tell us why you want to become a Saathi"
     },
-    
+
     // Arrays
     highlights: [
       "40% Recurring Commission for the First 12 Months",
@@ -150,6 +150,7 @@ const TRANSLATIONS = {
       { q: "Is the 40% commission permanent?", a: "40% applies for the first 12 months. After that, 25% recurring commission applies." },
     ],
     businessTypes: [
+      "Student",
       "Business Consultant",
       "CA Firm",
       "HR Consultant",
@@ -225,8 +226,8 @@ const TRANSLATIONS = {
     formCityPlaceholder: "आपका शहर",
     formWebsite: "वेबसाइट / लिंक्डइन प्रोफाइल",
     formWebsitePlaceholder: "वेबसाइट या लिंक्डइन यूआरएल",
-    formBusinessType: "व्यवसाय का प्रकार *",
-    formBusinessTypePlaceholder: "व्यवसाय प्रकार चुनें",
+    formBusinessType: "पेशा / प्रोफेशन का प्रकार *",
+    formBusinessTypePlaceholder: "प्रोफेशन का प्रकार चुनें",
     formExperience: "बिक्री या परामर्श में अनुभव",
     formExperiencePlaceholder: "संक्षेप में अपना प्रासंगिक अनुभव साझा करें",
     formWhySaathi: "आप ANSH साथी क्यों बनना चाहते हैं? *",
@@ -247,7 +248,7 @@ const TRANSLATIONS = {
       businessType: "कृपया अपना व्यवसाय प्रकार चुनें",
       whyPartner: "कृपया हमें बताएं कि आप साथी क्यों बनना चाहते हैं"
     },
-    
+
     // Arrays
     highlights: [
       "पहले 12 महीनों के लिए 40% आवर्ती कमीशन",
@@ -305,6 +306,7 @@ const TRANSLATIONS = {
       { q: "क्या 40% कमीशन स्थायी है?", a: "40% पहले 12 महीनों के लिए लागू होता है। उसके बाद, 25% आवर्ती कमीशन लागू होता है।" },
     ],
     businessTypes: [
+      "छात्र (Student)",
       "व्यावसायिक सलाहकार (Business Consultant)",
       "सीए फर्म (CA Firm)",
       "एचआर सलाहकार (HR Consultant)",
@@ -323,11 +325,29 @@ type FormState = {
   companyName: string;
   email: string;
   phone: string;
+  pincode: string;
   city: string;
+  state: string;
+  address: string;
   website: string;
   businessType: string;
   experience: string;
   whyPartner: string;
+
+  // Step 2: Bank details
+  accountHolderName: string;
+  bankName: string;
+  accountNumber: string;
+  ifsc: string;
+  upiId: string;
+
+  // Step 3: Important documents & confirmations
+  aadhaarNumber: string;
+  aadhaarCardUrl: string;
+  panNumber: string;
+  panCardUrl: string;
+  is18Plus: boolean;
+  hasLaptopAndInternet: boolean;
 };
 
 const EMPTY_FORM: FormState = {
@@ -335,11 +355,27 @@ const EMPTY_FORM: FormState = {
   companyName: "",
   email: "",
   phone: "",
+  pincode: "",
   city: "",
+  state: "",
+  address: "",
   website: "",
   businessType: "",
   experience: "",
   whyPartner: "",
+
+  accountHolderName: "",
+  bankName: "",
+  accountNumber: "",
+  ifsc: "",
+  upiId: "",
+
+  aadhaarNumber: "",
+  aadhaarCardUrl: "",
+  panNumber: "",
+  panCardUrl: "",
+  is18Plus: false,
+  hasLaptopAndInternet: false,
 };
 
 export default function SaathiClient() {
@@ -349,6 +385,10 @@ export default function SaathiClient() {
   const [isComingSoonOpen, setIsComingSoonOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [formData, setFormData] = useState<FormState>(EMPTY_FORM);
+  const [formStep, setFormStep] = useState(1);
+  const [uploadingAadhaar, setUploadingAadhaar] = useState(false);
+  const [uploadingPan, setUploadingPan] = useState(false);
+  const [loadingPincode, setLoadingPincode] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -378,6 +418,11 @@ export default function SaathiClient() {
   }, [isLangOpen]);
 
   useEffect(() => {
+    // Force dark mode on the landing page so it never follows light mode overrides
+    const html = document.documentElement;
+    html.classList.remove("light");
+    html.classList.add("dark");
+
     const onScroll = () => setIsScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
@@ -386,8 +431,11 @@ export default function SaathiClient() {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    const isCheckbox = type === "checkbox";
+    const val = isCheckbox ? (e.target as HTMLInputElement).checked : value;
+
+    setFormData((prev) => ({ ...prev, [name]: val }));
     if (formErrors[name]) {
       setFormErrors((prev) => {
         const next = { ...prev };
@@ -397,14 +445,264 @@ export default function SaathiClient() {
     }
   };
 
+  const handlePincodeChange = async (val: string) => {
+    const cleanVal = val.replace(/\D/g, "").slice(0, 6);
+    setFormData((prev) => ({ ...prev, pincode: cleanVal }));
+
+    if (formErrors.pincode) {
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next.pincode;
+        return next;
+      });
+    }
+
+    if (cleanVal.length === 6) {
+      setLoadingPincode(true);
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${cleanVal}`);
+        const data = await res.json();
+        if (data[0]?.Status === "Success" && data[0]?.PostOffice?.length > 0) {
+          const po = data[0].PostOffice[0];
+          setFormData((prev) => ({
+            ...prev,
+            city: po.District || "",
+            state: po.State || "",
+            address: po.Name || "",
+          }));
+
+          // Clear errors for auto-filled inputs
+          setFormErrors((prev) => {
+            const next = { ...prev };
+            delete next.city;
+            delete next.state;
+            delete next.address;
+            return next;
+          });
+        }
+      } catch {
+        /* silent */
+      } finally {
+        setLoadingPincode(false);
+      }
+    }
+  };
+
+  const compressImage = (file: File): Promise<File> => {
+    return new Promise((resolve) => {
+      // Only compress images (PDFs or other docs are uploaded untouched)
+      if (!file.type.startsWith("image/")) {
+        resolve(file);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+
+          // Limit max dimensions to 1200px
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(file);
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Export as JPEG with 70% quality compression
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, ".jpg"), {
+                  type: "image/jpeg",
+                  lastModified: Date.now(),
+                });
+                console.log(`[Upload Compression] Reduced ${file.name} from ${(file.size / 1024).toFixed(1)}KB to ${(compressedFile.size / 1024).toFixed(1)}KB`);
+                resolve(compressedFile);
+              } else {
+                resolve(file);
+              }
+            },
+            "image/jpeg",
+            0.7
+          );
+        };
+        img.src = event.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, docType: "aadhaar" | "pan") => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setSubmitError("");
+    if (docType === "aadhaar") {
+      setUploadingAadhaar(true);
+    } else {
+      setUploadingPan(true);
+    }
+
+    try {
+      const compressedFile = await compressImage(file);
+      const uploadData = new FormData();
+      uploadData.append("file", compressedFile);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadData,
+      });
+
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      setFormData((prev) => ({
+        ...prev,
+        [docType === "aadhaar" ? "aadhaarCardUrl" : "panCardUrl"]: data.url,
+      }));
+
+      // Clear upload error if any
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next[docType === "aadhaar" ? "aadhaarCardUrl" : "panCardUrl"];
+        return next;
+      });
+    } catch (err: any) {
+      setSubmitError(`Upload failed: ${err.message || "Unknown error"}`);
+    } finally {
+      if (docType === "aadhaar") {
+        setUploadingAadhaar(false);
+      } else {
+        setUploadingPan(false);
+      }
+    }
+  };
+
+  const validateStep1 = () => {
+    const errors: Record<string, string> = {};
+    if (!formData.fullName.trim()) errors.fullName = "Please enter your full name";
+    if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Please enter a valid email address";
+    if (!formData.phone.trim() || formData.phone.trim().length !== 10) errors.phone = "Please enter a valid 10-digit phone number";
+    if (!formData.pincode.trim() || formData.pincode.trim().length !== 6) errors.pincode = "Please enter a valid 6-digit pincode";
+    if (!formData.city.trim()) errors.city = "Please enter your city";
+    if (!formData.state.trim()) errors.state = "Please enter your state";
+    if (!formData.address.trim()) errors.address = "Please enter your address";
+    if (!formData.businessType) errors.businessType = "Please select your profession type";
+    if (!formData.whyPartner.trim()) errors.whyPartner = "Please tell us why you want to become a Saathi";
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const validateStep2 = () => {
+    const errors: Record<string, string> = {};
+    if (formData.ifsc.trim() && formData.ifsc.trim().length !== 11) {
+      errors.ifsc = "IFSC code must be exactly 11 characters";
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const validateStep3 = () => {
+    const errors: Record<string, string> = {};
+    if (!formData.aadhaarNumber.trim() || formData.aadhaarNumber.trim().length !== 12) {
+      errors.aadhaarNumber = "Please enter a valid 12-digit Aadhaar number";
+    }
+    if (!formData.aadhaarCardUrl) {
+      errors.aadhaarCardUrl = "Please upload Aadhaar card";
+    }
+    if (!formData.panNumber.trim() || formData.panNumber.trim().length !== 10) {
+      errors.panNumber = "Please enter a valid 10-digit PAN number";
+    }
+    if (!formData.panCardUrl) {
+      errors.panCardUrl = "Please upload PAN card";
+    }
+    if (!formData.is18Plus) {
+      errors.is18Plus = "You must confirm that you are 18+ years of age";
+    }
+    if (!formData.hasLaptopAndInternet) {
+      errors.hasLaptopAndInternet = "You must confirm you have a laptop and good internet";
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleNextStep = () => {
+    setSubmitError("");
+    if (formStep === 1) {
+      if (validateStep1()) setFormStep(2);
+    } else if (formStep === 2) {
+      if (validateStep2()) setFormStep(3);
+    }
+  };
+
+  const handlePrevStep = () => {
+    setSubmitError("");
+    setFormStep((prev) => Math.max(1, prev - 1));
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsComingSoonOpen(true);
+    setSubmitError("");
+
+    if (formStep === 1) {
+      handleNextStep();
+      return;
+    }
+    if (formStep === 2) {
+      handleNextStep();
+      return;
+    }
+
+    if (!validateStep3()) return;
+
+    try {
+      setIsSubmitting(true);
+      const res = await fetch("/api/saathi-applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      setIsSubmitted(true);
+    } catch (err: any) {
+      setSubmitError(err.message || "Failed to submit application. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const inputClass = (field: string) =>
-    `w-full bg-white/[0.03] border ${
-      formErrors[field] ? "border-red-500/50" : "border-white/10"
+    `w-full bg-white/[0.03] border ${formErrors[field] ? "border-red-500/50" : "border-white/10"
     } rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300`;
 
   return (
@@ -414,9 +712,8 @@ export default function SaathiClient() {
 
       {/* Nav */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 flex items-center ${
-          isScrolled ? "h-[70px] glass" : "h-[80px]"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 flex items-center ${isScrolled ? "h-[70px] glass" : "h-[80px]"
+          }`}
       >
         <div className="page-container flex justify-between items-center w-full">
           <Link href="/" className="flex flex-col leading-none">
@@ -441,7 +738,7 @@ export default function SaathiClient() {
             >
               {t.becomeSaathi}
             </button>
-            
+
             {/* Custom language selector styled to fit premium dark theme */}
             <div className="relative border-l border-white/10 pl-4 ml-2" onClick={(e) => e.stopPropagation()}>
               <button
@@ -466,9 +763,8 @@ export default function SaathiClient() {
                       setLang("en");
                       setIsLangOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-xs font-medium hover:bg-white/5 transition-colors cursor-pointer ${
-                      lang === "en" ? "text-primary-bright" : "text-gray-300"
-                    }`}
+                    className={`w-full text-left px-4 py-2 text-xs font-medium hover:bg-white/5 transition-colors cursor-pointer ${lang === "en" ? "text-primary-bright" : "text-gray-300"
+                      }`}
                   >
                     English
                   </button>
@@ -478,9 +774,8 @@ export default function SaathiClient() {
                       setLang("hi");
                       setIsLangOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-xs font-medium hover:bg-white/5 transition-colors cursor-pointer ${
-                      lang === "hi" ? "text-primary-bright" : "text-gray-300"
-                    }`}
+                    className={`w-full text-left px-4 py-2 text-xs font-medium hover:bg-white/5 transition-colors cursor-pointer ${lang === "hi" ? "text-primary-bright" : "text-gray-300"
+                      }`}
                   >
                     हिन्दी (Hindi)
                   </button>
@@ -517,7 +812,7 @@ export default function SaathiClient() {
             type="button"
             onClick={() => {
               setIsMenuOpen(false);
-              setIsComingSoonOpen(true);
+              document.getElementById("apply")?.scrollIntoView({ behavior: "smooth" });
             }}
             className="w-full btn btn-primary py-3.5 text-center text-sm font-semibold rounded-xl cursor-pointer"
           >
@@ -535,11 +830,10 @@ export default function SaathiClient() {
                   setLang("en");
                   setIsMenuOpen(false);
                 }}
-                className={`flex-1 py-2.5 rounded-xl border text-xs font-semibold text-center cursor-pointer transition-colors ${
-                  lang === "en"
+                className={`flex-1 py-2.5 rounded-xl border text-xs font-semibold text-center cursor-pointer transition-colors ${lang === "en"
                     ? "bg-primary-bright/10 border-primary-bright text-primary-bright"
                     : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
-                }`}
+                  }`}
               >
                 English
               </button>
@@ -549,11 +843,10 @@ export default function SaathiClient() {
                   setLang("hi");
                   setIsMenuOpen(false);
                 }}
-                className={`flex-1 py-2.5 rounded-xl border text-xs font-semibold text-center cursor-pointer transition-colors ${
-                  lang === "hi"
+                className={`flex-1 py-2.5 rounded-xl border text-xs font-semibold text-center cursor-pointer transition-colors ${lang === "hi"
                     ? "bg-primary-bright/10 border-primary-bright text-primary-bright"
                     : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
-                }`}
+                  }`}
               >
                 हिन्दी (Hindi)
               </button>
@@ -598,18 +891,26 @@ export default function SaathiClient() {
               <div className="flex flex-wrap gap-4">
                 <button
                   type="button"
-                  onClick={() => setIsComingSoonOpen(true)}
+                  onClick={() => document.getElementById("apply")?.scrollIntoView({ behavior: "smooth" })}
                   className="btn btn-primary cursor-pointer"
                 >
                   {t.becomeSaathi}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsComingSoonOpen(true)}
+                  onClick={() => window.open(t.discussionUrl, "_blank")}
                   className="btn btn-outline cursor-pointer"
                 >
                   {t.bookDiscussion}
                 </button>
+                <a
+                  href="https://anshapps.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/[0.03] cursor-pointer flex items-center justify-center font-bold"
+                >
+                  Visit ANSH
+                </a>
               </div>
 
               <p className="mt-8 text-xs text-gray-500 max-w-xl leading-relaxed">
@@ -906,9 +1207,8 @@ export default function SaathiClient() {
                       {faq.q}
                     </span>
                     <span
-                      className={`text-primary-bright text-xl leading-none transition-transform ${
-                        open ? "rotate-45" : ""
-                      }`}
+                      className={`text-primary-bright text-xl leading-none transition-transform ${open ? "rotate-45" : ""
+                        }`}
                     >
                       +
                     </span>
@@ -954,6 +1254,17 @@ export default function SaathiClient() {
                   {t.applyCheck3}
                 </li>
               </ul>
+
+              {/* Bharat Bhagya Vidhata Text */}
+              <div className="mt-14 p-8 rounded-3xl bg-white/[0.02] border border-white/5 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-28 h-28 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500" />
+                <h4 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-orange-400 via-white to-emerald-400 bg-clip-text text-transparent tracking-wider uppercase mb-3">
+                  Bharat Bhagya Vidhata
+                </h4>
+                <p className="text-xs md:text-sm text-gray-400 font-medium leading-relaxed tracking-wide">
+                  Let's shape the destiny of India, together.
+                </p>
+              </div>
             </div>
 
             <div className="reveal">
@@ -962,195 +1273,524 @@ export default function SaathiClient() {
 
                 {!isSubmitted ? (
                   <form onSubmit={handleFormSubmit} className="space-y-5 text-left relative">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                      <div className="space-y-2 sm:col-span-2">
-                        <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
-                          {t.formFullName}
-                        </label>
-                        <input
-                          type="text"
-                          name="fullName"
-                          value={formData.fullName}
-                          onChange={handleInputChange}
-                          placeholder={t.formFullNamePlaceholder}
-                          className={inputClass("fullName")}
-                        />
-                        {formErrors.fullName && (
-                          <p className="text-xs text-red-400">{formErrors.fullName}</p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
-                          {t.formCompanyName}
-                        </label>
-                        <input
-                          type="text"
-                          name="companyName"
-                          value={formData.companyName}
-                          onChange={handleInputChange}
-                          placeholder={t.formCompanyNamePlaceholder}
-                          className={inputClass("companyName")}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
-                          {t.formEmail}
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          placeholder={t.formEmailPlaceholder}
-                          className={inputClass("email")}
-                        />
-                        {formErrors.email && (
-                          <p className="text-xs text-red-400">{formErrors.email}</p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
-                          {t.formPhone}
-                        </label>
-                        <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
-                            +91
-                          </span>
-                          <input
-                            type="tel"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleInputChange}
-                            maxLength={10}
-                            placeholder={t.formPhonePlaceholder}
-                            className={`${inputClass("phone")} !pl-14`}
-                          />
+                    {/* Form Step Progress Indicator */}
+                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+                      <div className="flex flex-col items-center gap-1.5 flex-1">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border transition-all ${formStep === 1 ? 'bg-primary border-primary text-white font-black' :
+                            formStep > 1 ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-white/10 text-gray-500'
+                          }`}>
+                          {formStep > 1 ? '✓' : '1'}
                         </div>
-                        {formErrors.phone && (
-                          <p className="text-xs text-red-400">{formErrors.phone}</p>
-                        )}
+                        <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-wider ${formStep >= 1 ? 'text-white' : 'text-gray-500'}`}>Basic Info</span>
                       </div>
-
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
-                          {t.formCity}
-                        </label>
-                        <input
-                          type="text"
-                          name="city"
-                          value={formData.city}
-                          onChange={handleInputChange}
-                          placeholder={t.formCityPlaceholder}
-                          className={inputClass("city")}
-                        />
-                        {formErrors.city && (
-                          <p className="text-xs text-red-400">{formErrors.city}</p>
-                        )}
+                      <div className={`h-[2px] flex-1 mx-1 transition-all ${formStep > 1 ? 'bg-emerald-500' : 'bg-white/10'}`} />
+                      <div className="flex flex-col items-center gap-1.5 flex-1">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border transition-all ${formStep === 2 ? 'bg-primary border-primary text-white font-black' :
+                            formStep > 2 ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-white/10 text-gray-500'
+                          }`}>
+                          {formStep > 2 ? '✓' : '2'}
+                        </div>
+                        <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-wider ${formStep >= 2 ? 'text-white' : 'text-gray-500'}`}>Bank Details</span>
                       </div>
-
-                      <div className="space-y-2 sm:col-span-2">
-                        <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
-                          {t.formWebsite}
-                        </label>
-                        <input
-                          type="text"
-                          name="website"
-                          value={formData.website}
-                          onChange={handleInputChange}
-                          placeholder={t.formWebsitePlaceholder}
-                          className={inputClass("website")}
-                        />
-                      </div>
-
-                      <div className="space-y-2 sm:col-span-2">
-                        <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
-                          {t.formBusinessType}
-                        </label>
-                        <select
-                          name="businessType"
-                          value={formData.businessType}
-                          onChange={handleInputChange}
-                          className={`${inputClass("businessType")} appearance-none`}
-                        >
-                          <option value="" className="bg-[#111114]">
-                            {t.formBusinessTypePlaceholder}
-                          </option>
-                          {t.businessTypes.map((type) => (
-                            <option key={type} value={type} className="bg-[#111114]">
-                              {type}
-                            </option>
-                          ))}
-                        </select>
-                        {formErrors.businessType && (
-                          <p className="text-xs text-red-400">{formErrors.businessType}</p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2 sm:col-span-2">
-                        <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
-                          {t.formExperience}
-                        </label>
-                        <textarea
-                          name="experience"
-                          value={formData.experience}
-                          onChange={handleInputChange}
-                          rows={3}
-                          placeholder={t.formExperiencePlaceholder}
-                          className={`${inputClass("experience")} resize-none`}
-                        />
-                      </div>
-
-                      <div className="space-y-2 sm:col-span-2">
-                        <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
-                          {t.formWhySaathi}
-                        </label>
-                        <textarea
-                          name="whyPartner"
-                          value={formData.whyPartner}
-                          onChange={handleInputChange}
-                          rows={4}
-                          placeholder={t.formWhySaathiPlaceholder}
-                          className={`${inputClass("whyPartner")} resize-none`}
-                        />
-                        {formErrors.whyPartner && (
-                          <p className="text-xs text-red-400">{formErrors.whyPartner}</p>
-                        )}
+                      <div className={`h-[2px] flex-1 mx-1 transition-all ${formStep > 2 ? 'bg-emerald-500' : 'bg-white/10'}`} />
+                      <div className="flex flex-col items-center gap-1.5 flex-1">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border transition-all ${formStep === 3 ? 'bg-primary border-primary text-white font-black' : 'border-white/10 text-gray-500'
+                          }`}>
+                          3
+                        </div>
+                        <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-wider ${formStep === 3 ? 'text-white' : 'text-gray-500'}`}>Documents</span>
                       </div>
                     </div>
 
-                    {submitError && (
-                      <p className="text-sm text-red-400 font-medium">{submitError}</p>
+                    {/* Step 1: Basic Info */}
+                    {formStep === 1 && (
+                      <div className="space-y-4">
+                        <div className="max-h-[460px] overflow-y-auto pr-3.5 form-scrollbar">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                              {t.formFullName}
+                            </label>
+                            <input
+                              type="text"
+                              name="fullName"
+                              value={formData.fullName}
+                              onChange={handleInputChange}
+                              placeholder={t.formFullNamePlaceholder}
+                              className={inputClass("fullName")}
+                            />
+                            {formErrors.fullName && (
+                              <p className="text-xs text-red-400">{formErrors.fullName}</p>
+                            )}
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                              {t.formCompanyName}
+                            </label>
+                            <input
+                              type="text"
+                              name="companyName"
+                              value={formData.companyName}
+                              onChange={handleInputChange}
+                              placeholder={t.formCompanyNamePlaceholder}
+                              className={inputClass("companyName")}
+                            />
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                              {t.formEmail}
+                            </label>
+                            <input
+                              type="email"
+                              name="email"
+                              value={formData.email}
+                              onChange={handleInputChange}
+                              placeholder={t.formEmailPlaceholder}
+                              className={inputClass("email")}
+                            />
+                            {formErrors.email && (
+                              <p className="text-xs text-red-400">{formErrors.email}</p>
+                            )}
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                              {t.formPhone}
+                            </label>
+                            <div className="relative">
+                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                                +91
+                              </span>
+                              <input
+                                type="tel"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                maxLength={10}
+                                placeholder={t.formPhonePlaceholder}
+                                className={`${inputClass("phone")} !pl-14`}
+                              />
+                            </div>
+                            {formErrors.phone && (
+                              <p className="text-xs text-red-400">{formErrors.phone}</p>
+                            )}
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                              Pincode *
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                name="pincode"
+                                value={formData.pincode}
+                                onChange={(e) => handlePincodeChange(e.target.value)}
+                                placeholder="6-digit pincode"
+                                className={inputClass("pincode")}
+                              />
+                              {loadingPincode && (
+                                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center">
+                                  <div className="w-3.5 h-3.5 border border-t-transparent border-primary rounded-full animate-spin" />
+                                </div>
+                              )}
+                            </div>
+                            {formErrors.pincode && (
+                              <p className="text-xs text-red-400">{formErrors.pincode}</p>
+                            )}
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                              {t.formCity}
+                            </label>
+                            <input
+                              type="text"
+                              name="city"
+                              value={formData.city}
+                              onChange={handleInputChange}
+                              placeholder={t.formCityPlaceholder}
+                              className={inputClass("city")}
+                            />
+                            {formErrors.city && (
+                              <p className="text-xs text-red-400">{formErrors.city}</p>
+                            )}
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                              State *
+                            </label>
+                            <input
+                              type="text"
+                              name="state"
+                              value={formData.state}
+                              onChange={handleInputChange}
+                              placeholder="State"
+                              className={inputClass("state")}
+                            />
+                            {formErrors.state && (
+                              <p className="text-xs text-red-400">{formErrors.state}</p>
+                            )}
+                          </div>
+
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                              Full Address *
+                            </label>
+                            <input
+                              type="text"
+                              name="address"
+                              value={formData.address}
+                              onChange={handleInputChange}
+                              placeholder="House No, Building, Street / Area"
+                              className={inputClass("address")}
+                            />
+                            {formErrors.address && (
+                              <p className="text-xs text-red-400">{formErrors.address}</p>
+                            )}
+                          </div>
+
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                              {t.formWebsite}
+                            </label>
+                            <input
+                              type="text"
+                              name="website"
+                              value={formData.website}
+                              onChange={handleInputChange}
+                              placeholder={t.formWebsitePlaceholder}
+                              className={inputClass("website")}
+                            />
+                          </div>
+
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                              {t.formBusinessType}
+                            </label>
+                            <select
+                              name="businessType"
+                              value={formData.businessType}
+                              onChange={handleInputChange}
+                              className={`${inputClass("businessType")} appearance-none`}
+                            >
+                              <option value="" className="bg-[#111114]">
+                                {t.formBusinessTypePlaceholder}
+                              </option>
+                              {t.businessTypes.map((type) => (
+                                <option key={type} value={type} className="bg-[#111114]">
+                                  {type}
+                                </option>
+                              ))}
+                            </select>
+                            {formErrors.businessType && (
+                              <p className="text-xs text-red-400">{formErrors.businessType}</p>
+                            )}
+                          </div>
+
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                              {t.formExperience}
+                            </label>
+                            <textarea
+                              name="experience"
+                              value={formData.experience}
+                              onChange={handleInputChange}
+                              rows={2}
+                              placeholder={t.formExperiencePlaceholder}
+                              className={`${inputClass("experience")} resize-none`}
+                            />
+                          </div>
+
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                              {t.formWhySaathi}
+                            </label>
+                            <textarea
+                              name="whyPartner"
+                              value={formData.whyPartner}
+                              onChange={handleInputChange}
+                              rows={3}
+                              placeholder={t.formWhySaathiPlaceholder}
+                              className={`${inputClass("whyPartner")} resize-none`}
+                            />
+                            {formErrors.whyPartner && (
+                              <p className="text-xs text-red-400">{formErrors.whyPartner}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end pt-4 border-t border-white/5">
+                          <button
+                            type="button"
+                            onClick={handleNextStep}
+                            className="btn btn-primary text-xs px-6 py-3 cursor-pointer"
+                          >
+                            Next: Bank Details →
+                          </button>
+                        </div>
+                      </div>
                     )}
 
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full btn btn-primary py-3.5 text-sm !rounded-xl relative flex justify-center items-center overflow-hidden group cursor-pointer"
-                    >
-                      {isSubmitting ? (
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <>
-                          <span className="font-bold">{t.btnSubmit}</span>
-                          <svg
-                            className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    {/* Step 2: Bank Details */}
+                    {formStep === 2 && (
+                      <div className="space-y-5">
+                        <div className="space-y-1.5 p-3.5 rounded-xl border border-primary/20 bg-primary/5 text-xs text-gray-300 mb-2 leading-relaxed">
+                          🏦 Please specify where you would like to receive your monthly recurring commission disbursements.
+                        </div>
+
+                        <div className="space-y-4">
+                          <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">Account Holder Name</label>
+                            <input
+                              type="text"
+                              name="accountHolderName"
+                              value={formData.accountHolderName}
+                              onChange={handleInputChange}
+                              placeholder="Name on bank account"
+                              className={inputClass("accountHolderName")}
                             />
-                          </svg>
-                        </>
-                      )}
-                    </button>
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">Bank Name</label>
+                            <input
+                              type="text"
+                              name="bankName"
+                              value={formData.bankName}
+                              onChange={handleInputChange}
+                              placeholder="e.g. HDFC Bank, ICICI Bank"
+                              className={inputClass("bankName")}
+                            />
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">Account Number</label>
+                            <input
+                              type="text"
+                              name="accountNumber"
+                              value={formData.accountNumber}
+                              onChange={handleInputChange}
+                              placeholder="Your bank account number"
+                              className={`${inputClass("accountNumber")} font-mono`}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">IFSC Code</label>
+                              <input
+                                type="text"
+                                name="ifsc"
+                                value={formData.ifsc}
+                                onChange={(e) => {
+                                  setFormData(prev => ({ ...prev, ifsc: e.target.value.toUpperCase() }));
+                                }}
+                                maxLength={11}
+                                placeholder="e.g. HDFC0001234"
+                                className={`${inputClass("ifsc")} font-mono uppercase`}
+                              />
+                              {formErrors.ifsc && (
+                                <p className="text-xs text-red-400">{formErrors.ifsc}</p>
+                              )}
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">UPI ID</label>
+                              <input
+                                type="text"
+                                name="upiId"
+                                value={formData.upiId}
+                                onChange={handleInputChange}
+                                placeholder="username@upi"
+                                className={inputClass("upiId")}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-between items-center pt-6 border-t border-white/5">
+                          <button
+                            type="button"
+                            onClick={handlePrevStep}
+                            className="btn btn-outline text-xs px-5 py-3 cursor-pointer"
+                          >
+                            ← Back
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleNextStep}
+                            className="btn btn-primary text-xs px-6 py-3 cursor-pointer"
+                          >
+                            Next: Documents →
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Step 3: Important Documents */}
+                    {formStep === 3 && (
+                      <div className="space-y-5">
+                        <div className="space-y-4">
+                          {/* Aadhaar Details Card */}
+                          <div className="space-y-3.5 p-4 rounded-2xl border border-white/5 bg-white/[0.01]">
+                            <span className="text-[10px] text-primary-bright font-bold uppercase tracking-wider block">Aadhaar Card Details</span>
+
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">Aadhaar Number *</label>
+                              <input
+                                type="text"
+                                name="aadhaarNumber"
+                                value={formData.aadhaarNumber}
+                                onChange={(e) => {
+                                  const val = e.target.value.replace(/\D/g, "").slice(0, 12);
+                                  setFormData(prev => ({ ...prev, aadhaarNumber: val }));
+                                }}
+                                placeholder="12-digit Aadhaar number"
+                                className={`${inputClass("aadhaarNumber")} font-mono`}
+                              />
+                              {formErrors.aadhaarNumber && (
+                                <p className="text-xs text-red-400">{formErrors.aadhaarNumber}</p>
+                              )}
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">Upload Aadhaar Card *</label>
+                              <div className="flex items-center justify-between gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/10">
+                                <span className="text-xs text-gray-400 truncate max-w-[180px]">
+                                  {formData.aadhaarCardUrl ? "✓ Aadhaar Card Uploaded" : "No file chosen"}
+                                </span>
+                                <label className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-primary/20 hover:bg-primary/30 border border-primary/30 text-primary-bright text-xs font-bold cursor-pointer transition-all">
+                                  {uploadingAadhaar ? "Uploading..." : "Choose File"}
+                                  <input
+                                    type="file"
+                                    accept="image/*,application/pdf"
+                                    onChange={(e) => handleFileUpload(e, "aadhaar")}
+                                    disabled={uploadingAadhaar}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
+                              {formErrors.aadhaarCardUrl && (
+                                <p className="text-xs text-red-400">{formErrors.aadhaarCardUrl}</p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* PAN Details Card */}
+                          <div className="space-y-3.5 p-4 rounded-2xl border border-white/5 bg-white/[0.01]">
+                            <span className="text-[10px] text-primary-bright font-bold uppercase tracking-wider block">PAN Card Details</span>
+
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">PAN Number *</label>
+                              <input
+                                type="text"
+                                name="panNumber"
+                                value={formData.panNumber}
+                                onChange={(e) => {
+                                  const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
+                                  setFormData(prev => ({ ...prev, panNumber: val }));
+                                }}
+                                placeholder="10-digit PAN number"
+                                className={`${inputClass("panNumber")} font-mono`}
+                              />
+                              {formErrors.panNumber && (
+                                <p className="text-xs text-red-400">{formErrors.panNumber}</p>
+                              )}
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">Upload PAN Card *</label>
+                              <div className="flex items-center justify-between gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/10">
+                                <span className="text-xs text-gray-400 truncate max-w-[180px]">
+                                  {formData.panCardUrl ? "✓ PAN Card Uploaded" : "No file chosen"}
+                                </span>
+                                <label className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-primary/20 hover:bg-primary/30 border border-primary/30 text-primary-bright text-xs font-bold cursor-pointer transition-all">
+                                  {uploadingPan ? "Uploading..." : "Choose File"}
+                                  <input
+                                    type="file"
+                                    accept="image/*,application/pdf"
+                                    onChange={(e) => handleFileUpload(e, "pan")}
+                                    disabled={uploadingPan}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
+                              {formErrors.panCardUrl && (
+                                <p className="text-xs text-red-400">{formErrors.panCardUrl}</p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Confirmations Card */}
+                          <div className="space-y-4 p-4 rounded-2xl border border-white/5 bg-white/[0.01]">
+                            <span className="text-[10px] text-primary-bright font-bold uppercase tracking-wider block">Confirmations</span>
+                            
+                            <label className="flex items-start gap-3 cursor-pointer group">
+                              <input
+                                type="checkbox"
+                                name="is18Plus"
+                                checked={formData.is18Plus}
+                                onChange={handleInputChange}
+                                className="w-4 h-4 mt-0.5 rounded border-white/10 bg-white/[0.03] text-primary focus:ring-0 focus:ring-offset-0 focus:outline-none transition-all cursor-pointer"
+                              />
+                              <span className="text-xs text-gray-300 group-hover:text-white transition-colors">
+                                I confirm that I am 18+ years of age *
+                              </span>
+                            </label>
+                            {formErrors.is18Plus && (
+                              <p className="text-xs text-red-400 pl-7">{formErrors.is18Plus}</p>
+                            )}
+
+                            <label className="flex items-start gap-3 cursor-pointer group">
+                              <input
+                                type="checkbox"
+                                name="hasLaptopAndInternet"
+                                checked={formData.hasLaptopAndInternet}
+                                onChange={handleInputChange}
+                                className="w-4 h-4 mt-0.5 rounded border-white/10 bg-white/[0.03] text-primary focus:ring-0 focus:ring-offset-0 focus:outline-none transition-all cursor-pointer"
+                              />
+                              <span className="text-xs text-gray-300 group-hover:text-white transition-colors">
+                                I confirm that I have a laptop and a good internet connection *
+                              </span>
+                            </label>
+                            {formErrors.hasLaptopAndInternet && (
+                              <p className="text-xs text-red-400 pl-7">{formErrors.hasLaptopAndInternet}</p>
+                            )}
+                          </div>
+                        </div>
+
+                        {submitError && (
+                          <p className="text-sm text-red-400 font-medium">{submitError}</p>
+                        )}
+
+                        <div className="flex justify-between items-center pt-6 border-t border-white/5">
+                          <button
+                            type="button"
+                            onClick={handlePrevStep}
+                            className="btn btn-outline text-xs px-5 py-3 cursor-pointer"
+                          >
+                            ← Back
+                          </button>
+
+                          <button
+                            type="submit"
+                            disabled={isSubmitting || uploadingAadhaar || uploadingPan}
+                            className="btn btn-primary text-xs px-6 py-3 cursor-pointer font-bold relative flex items-center justify-center"
+                          >
+                            {isSubmitting ? (
+                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                              "Apply to Become a Saathi"
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </form>
                 ) : (
                   <div className="py-10 text-center space-y-6">
@@ -1172,13 +1812,6 @@ export default function SaathiClient() {
                         {t.submitSuccessDesc.replace("{name}", formData.fullName)}
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setIsComingSoonOpen(true)}
-                      className="inline-flex btn btn-outline text-sm cursor-pointer"
-                    >
-                      {t.btnScheduleCall}
-                    </button>
                   </div>
                 )}
               </div>
@@ -1203,14 +1836,14 @@ export default function SaathiClient() {
           <div className="flex flex-wrap justify-center gap-4">
             <button
               type="button"
-              onClick={() => setIsComingSoonOpen(true)}
+              onClick={() => document.getElementById("apply")?.scrollIntoView({ behavior: "smooth" })}
               className="btn btn-primary cursor-pointer"
             >
               {t.becomeSaathi}
             </button>
             <button
               type="button"
-              onClick={() => setIsComingSoonOpen(true)}
+              onClick={() => window.open(t.discussionUrl, "_blank")}
               className="btn btn-outline cursor-pointer"
             >
               {t.scheduleCall}
@@ -1230,7 +1863,7 @@ export default function SaathiClient() {
           />
           <div className="relative glass-card rounded-[28px] border-white/10 p-8 max-w-sm w-full text-center shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] animate-fade-in z-10">
             <div className="absolute top-0 right-0 w-24 h-24 bg-primary/20 rounded-full blur-[40px] pointer-events-none" />
-            
+
             <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto text-primary-bright mb-6">
               <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />

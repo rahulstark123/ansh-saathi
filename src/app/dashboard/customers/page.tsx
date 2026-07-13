@@ -132,31 +132,24 @@ export default function CustomersPage() {
     setError('');
   };
 
-  // Helper to determine commission rate based on saathi order and date
-  const calculateCommissionRate = (joinedDateStr: string) => {
-    if (!joinedDateStr) return 25; // Default standard rate
+  const currentSaathi = saathis.find(s => s.id === currentSaathiId);
 
-    // Sort saathis by joinedDate to find order
-    const sortedSaathis = [...saathis].sort(
-      (a, b) => new Date(a.joinedDate).getTime() - new Date(b.joinedDate).getTime()
-    );
-    const saathiIndex = sortedSaathis.findIndex(s => s.id === currentSaathiId);
-
-    // If Saathi is in the first 30 (index 0 to 29)
-    if (saathiIndex !== -1 && saathiIndex < 30) {
-      const date = new Date(joinedDateStr);
-      const promoStart = new Date('2026-07-14');
-      const promoEnd = new Date('2027-07-14');
-      if (date >= promoStart && date <= promoEnd) {
-        return 40; // 40% rate
+  // Helper to determine commission rate based on saathi partner code
+  const calculateCommissionRate = () => {
+    if (!currentSaathi?.partnerCode) return 25; // Default standard rate
+    const match = currentSaathi.partnerCode.match(/saathi-(\d+)/i);
+    if (match) {
+      const saathiNum = parseInt(match[1], 10);
+      if (saathiNum <= 21) {
+        return 40; // 40% rate for first 21 saathis
       }
     }
     return 25; // 25% standard rate
   };
 
   const commissionRate = useMemo(() => {
-    return calculateCommissionRate(joinedDate);
-  }, [joinedDate, saathis, currentSaathiId]);
+    return calculateCommissionRate();
+  }, [currentSaathi?.partnerCode, saathis, currentSaathiId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -625,7 +618,7 @@ export default function CustomersPage() {
                       <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider block">Applicable Commission Rate</span>
                       <p className="text-[11px] text-white/90 mt-0.5 leading-snug">
                         {commissionRate === 40 
-                          ? '🎉 Early Partner Promo Active (First 30 Saathis, July 14, 2026 - July 14, 2027)' 
+                          ? '🎉 Early Partner Promo Active (First 21 Saathis, SAATHI-00001 to SAATHI-00021)' 
                           : 'Standard Commission Tier'}
                       </p>
                     </div>

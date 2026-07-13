@@ -451,8 +451,22 @@ export default function LeaderboardView({ isAdmin = false }: LeaderboardViewProp
                     })
                   ) : (
                     <tr>
-                      <td colSpan={7} className="py-8 text-center text-text-muted">
-                        No partners found matching search query.
+                      <td colSpan={7} className="py-12 text-center">
+                        {searchTerm ? (
+                          <div className="space-y-1">
+                            <p className="text-text-muted text-sm">No partners found matching <strong>&quot;{searchTerm}&quot;</strong></p>
+                            <p className="text-text-muted text-xs">Try a different name, city or profession</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            <div className="text-4xl">🏆</div>
+                            <p className="text-white font-semibold font-outfit">No rankings yet!</p>
+                            <p className="text-text-muted text-xs max-w-xs mx-auto leading-relaxed">
+                              The leaderboard lights up once Saathis start onboarding clients.<br/>
+                              Add your first customer to claim your spot on the board!
+                            </p>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   )}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import RoleSwitcher from "@/components/role-switcher";
 import AuthSync from "@/components/auth-sync";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "ANSH Saathi - Partner Portal",
@@ -19,9 +20,11 @@ export default function RootLayout({
         <meta name="theme-color" content="#060608" />
       </head>
       <body className="min-h-full bg-bg-dark text-text-main flex flex-col font-sans antialiased overflow-y-auto">
-        <AuthSync />
-        {children}
-        <RoleSwitcher />
+        <ThemeProvider>
+          <AuthSync />
+          {children}
+          <RoleSwitcher />
+        </ThemeProvider>
       </body>
     </html>
   );

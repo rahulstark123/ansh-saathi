@@ -12,26 +12,27 @@ export default function SaathiLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const { role } = usePortalStore();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Wait for client-side hydration
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Sync state & routing
   useEffect(() => {
+    if (!isMounted) return;
     if (role === 'guest') {
       router.replace('/login');
     } else if (role === 'admin') {
       router.replace('/admin');
     }
-  }, [role, router]);
+  }, [role, router, isMounted]);
 
-  if (role === 'guest' || role === 'admin') {
+  if (!isMounted || role === 'guest' || role === 'admin') {
     return (
-      <div className="min-h-screen bg-bg-dark flex flex-col items-center justify-center text-white p-6">
-        <div className="glass-card max-w-md w-full p-8 rounded-2xl text-center space-y-4">
-          <ShieldAlert className="w-12 h-12 text-purple-400 mx-auto animate-pulse" />
-          <h2 className="text-xl font-bold font-outfit">Access Denied</h2>
-          <p className="text-sm text-text-muted">
-            You do not have access to this section. Please use the floating control panel at the bottom-right to change your role.
-          </p>
-        </div>
+      <div className="min-h-screen bg-bg-dark flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-t-transparent border-primary rounded-full animate-spin" />
       </div>
     );
   }
@@ -60,7 +61,7 @@ export default function SaathiLayout({ children }: { children: React.ReactNode }
 
   // If pending, we restrict access to core screens, showing an onboarding portal
   const isRestrictedPage = pathname === '/dashboard' || pathname === '/dashboard/customers' || pathname === '/dashboard/renewals' || pathname === '/dashboard/commissions';
-  const showPendingOverlay = role === 'saathi-pending' && isRestrictedPage;
+  const showPendingOverlay = false;
 
   return (
     <div className="min-h-screen bg-bg-dark text-white flex">

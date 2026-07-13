@@ -468,7 +468,7 @@ export default function AdminCommissionsPage() {
                           <p className="font-mono text-[10px] mt-0.5 truncate max-w-[120px]">{c.referenceNumber}</p>
                           {c.paymentMode && (
                             <p className="text-[10px] text-text-muted/70 mt-0.5">
-                              Mode: <span className="font-semibold text-white/80">{c.paymentMode}</span> {c.paymentThrough && <span>({c.paymentThrough})</span>}
+                              Mode: <span className="font-semibold text-text-main">{c.paymentMode}</span> {c.paymentThrough && <span>({c.paymentThrough})</span>}
                             </p>
                           )}
                           {c.adminNote && (

@@ -21,7 +21,7 @@ export function SiteFooter({
           >
             ANSH Apps
           </p>
-          <p className="footer-tagline mt-2 md:mt-4 font-black tracking-tighter font-outfit leading-none text-shimmer-white">
+          <p className="footer-tagline mt-3 md:mt-5 font-black tracking-tighter font-outfit leading-none text-shimmer-white text-lg sm:text-2xl md:text-3xl lg:text-4xl uppercase">
             Built for Bharat, Ready for the world
           </p>
         </div>

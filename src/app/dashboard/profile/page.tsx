@@ -76,7 +76,7 @@ export default function ProfilePage() {
       <label className="text-xs text-text-muted font-semibold tracking-wider uppercase">{label}</label>
       <div className="relative">
         <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted">{icon}</div>
-        <div className="w-full bg-white/[0.02] border border-glass-border rounded-xl py-2.5 pl-11 pr-4 text-sm text-white/80 select-text cursor-default">
+        <div className="w-full bg-bg-accent/50 border border-glass-border rounded-xl py-2.5 pl-11 pr-4 text-sm text-text-main select-text cursor-default">
           {value || <span className="text-text-muted italic">Not provided</span>}
         </div>
       </div>

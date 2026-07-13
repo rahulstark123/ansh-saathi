@@ -79,6 +79,19 @@ export async function POST(req: NextRequest) {
 
     const wid = saathi.wid;
 
+    // Resolve commission rate based on Saathi's partner code
+    // "Remember upto saathi-00021 all have 40% commission rate after that as usual 25%"
+    let resolvedCommissionRate = 25;
+    if (saathi.partnerCode) {
+      const match = saathi.partnerCode.match(/saathi-(\d+)/i);
+      if (match) {
+        const saathiNum = parseInt(match[1], 10);
+        if (saathiNum <= 21) {
+          resolvedCommissionRate = 40;
+        }
+      }
+    }
+
     // 2. Create customer record in Supabase
     const customer = await prisma.customer.create({
       data: {
@@ -91,7 +104,7 @@ export async function POST(req: NextRequest) {
         mrr: parseFloat(mrr) || 0,
         status: status || 'pending',
         joinedDate: joinedDate ? new Date(joinedDate) : new Date(),
-        commissionRate: parseFloat(commissionRate) || 25,
+        commissionRate: resolvedCommissionRate,
         saathiId
       }
     });

@@ -31,8 +31,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [role, isAuthorized, router, isMounted]);
 
-  // Show a neutral loading spinner during hydration to prevent Access Denied flash
-  if (!isMounted || role === 'guest') {
+  // Show a neutral loading spinner during hydration and redirection to prevent Access Denied flash
+  if (!isMounted || role === 'guest' || (!isAuthorized && (role === 'saathi' || role === 'saathi-pending'))) {
     return (
       <div className="min-h-screen bg-bg-dark flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-t-transparent border-purple-500 rounded-full animate-spin" />

@@ -28,6 +28,7 @@ export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [error, setError] = useState('');
 
   // ── Signup step ─────────────────────────────────────────────────────────────
@@ -152,14 +153,14 @@ export default function LoginPage() {
           };
           upsertSaathi(saathi);
         }
-        setRole(saathi.status === 'approved' ? 'saathi' : 'saathi-pending');
+        setRole('saathi');
         setCurrentSaathiId(saathi.id);
         router.push('/dashboard');
         return;
       }
       const saathi = saathis.find(s => s.email.toLowerCase() === email.toLowerCase());
       if (saathi) {
-        setRole(saathi.status === 'approved' ? 'saathi' : 'saathi-pending');
+        setRole('saathi');
         setCurrentSaathiId(saathi.id);
         router.push('/dashboard');
       } else {
@@ -291,7 +292,7 @@ export default function LoginPage() {
 
       {/* Main */}
       <main className="flex-1 flex items-center justify-center p-6 relative z-10">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-lg">
           <div className="glass-card rounded-2xl p-6 md:p-8 shadow-2xl relative border border-glass-border">
 
             {/* Card title */}
@@ -344,9 +345,12 @@ export default function LoginPage() {
                     </div>
                     <div className="relative">
                       <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-                      <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
-                        className="w-full bg-white/[0.03] border border-glass-border focus:border-primary rounded-xl py-2.5 pl-11 pr-4 text-sm text-white placeholder-text-muted focus:outline-none transition-all"
+                      <input type={showLoginPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required
+                        className="w-full bg-white/[0.03] border border-glass-border focus:border-primary rounded-xl py-2.5 pl-11 pr-10 text-sm text-white placeholder-text-muted focus:outline-none transition-all"
                         placeholder="••••••••" />
+                      <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-white cursor-pointer bg-transparent border-none p-0 focus:outline-none">
+                        {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
                     </div>
                   </div>
                   <button type="submit" className="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white font-semibold rounded-xl hover:opacity-90 shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 cursor-pointer mt-6 text-sm">

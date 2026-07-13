@@ -254,7 +254,7 @@ export default function AdminRequestsPage() {
 
                 <div>
                   <p className="text-xs text-text-muted font-semibold uppercase tracking-wider mb-1">Description</p>
-                  <p className="text-sm text-white/80 whitespace-pre-wrap leading-relaxed bg-white/[0.02] border border-glass-border rounded-xl p-3">{selectedRequest.description}</p>
+                  <p className="text-sm text-text-main whitespace-pre-wrap leading-relaxed bg-bg-accent/50 border border-glass-border rounded-xl p-3">{selectedRequest.description}</p>
                 </div>
 
                 {selectedRequest.attachments.length > 0 && (
@@ -332,7 +332,7 @@ export default function AdminRequestsPage() {
                     <div className="text-center">
                       {getStatusBadge(selectedRequest.status)}
                       {selectedRequest.adminNote && (
-                        <div className="mt-3 p-3 rounded-xl bg-white/[0.02] border border-glass-border text-xs text-white/70 flex items-start gap-2">
+                        <div className="mt-3 p-3 rounded-xl bg-bg-accent/50 border border-glass-border text-xs text-text-muted flex items-start gap-2">
                           <MessageSquare className="w-3.5 h-3.5 shrink-0 mt-0.5 text-text-muted" />
                           <span>{selectedRequest.adminNote}</span>
                         </div>

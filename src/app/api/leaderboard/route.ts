@@ -11,23 +11,18 @@ export async function GET(req: NextRequest) {
     const searchTerm = searchParams.get('searchTerm') || '';
     const currentSaathiId = searchParams.get('currentSaathiId') || '';
 
-    if (!widStr) {
-      return NextResponse.json({ error: 'Workspace ID (wid) is required' }, { status: 400 });
-    }
-
-    const wid = parseInt(widStr, 10);
-    if (isNaN(wid)) {
-      return NextResponse.json({ error: 'Invalid Workspace ID' }, { status: 400 });
-    }
-
     const page = parseInt(pageStr, 10);
     const limit = parseInt(limitStr, 10);
     const skip = (page - 1) * limit;
 
-    // 1. Fetch all approved saathis belonging to the same workspace to compute ranking/standing
+    // 1. Fetch all approved saathis globally from the database, plus the current saathi (so they see themselves)
     const saathis = await prisma.saathi.findMany({
-      where: {
-        wid,
+      where: currentSaathiId ? {
+        OR: [
+          { status: 'approved' },
+          { id: currentSaathiId }
+        ]
+      } : {
         status: 'approved'
       },
       include: {
@@ -86,7 +81,14 @@ export async function GET(req: NextRequest) {
       }
     });
 
+    // 3b. Only show Saathis with actual activity on the public leaderboard,
+    //     but always include the current logged-in Saathi so they see themselves.
+    const activeStats = allStats.filter(
+      item => item.referralsCount > 0 || item.commissionsTotal > 0 || item.id === currentSaathiId
+    );
+
     // 4. Find the standing of the current logged-in saathi from the full sorted list
+    //    (rank is among ALL approved saathis, not just active ones)
     let myStanding = null;
     if (currentSaathiId) {
       const rankIndex = allStats.findIndex(item => item.id === currentSaathiId);
@@ -98,8 +100,8 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // 5. Apply search filtering
-    const filteredStats = allStats.filter(item => {
+    // 5. Apply search filtering — only on activeStats (Saathis with real activity)
+    const filteredStats = activeStats.filter(item => {
       if (!searchTerm) return true;
       const term = searchTerm.toLowerCase();
       return (
@@ -122,7 +124,8 @@ export async function GET(req: NextRequest) {
         totalPages,
         currentPage: page,
         limit,
-        totalRegistered: allStats.length
+        totalRegistered: allStats.length,   // all approved Saathis
+        totalActive: activeStats.length      // Saathis with actual performance
       },
       myStanding
     });

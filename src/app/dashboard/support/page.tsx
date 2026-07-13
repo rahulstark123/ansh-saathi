@@ -289,10 +289,15 @@ export default function SupportPage() {
                 className="w-full bg-bg-accent border border-glass-border focus:border-primary rounded-xl py-2.5 px-3.5 text-xs text-white focus:outline-none transition-all"
                 required
               >
-                <option value="Commissions & Payouts">Commissions & Payouts</option>
-                <option value="Client Onboarding">Client Onboarding</option>
-                <option value="Marketing Resources">Marketing Resources</option>
-                <option value="Technical Queries">Technical Queries</option>
+                <option value="Commissions & Payouts">💰 Commissions & Payouts</option>
+                <option value="Client Onboarding">🤝 Client Onboarding</option>
+                <option value="Lead Verification & Status">🔍 Lead Verification & Status</option>
+                <option value="Marketing & Sales Kits">📢 Marketing & Sales Kits</option>
+                <option value="Technical Queries & Bug Reports">💻 Technical Queries & Bug Reports</option>
+                <option value="Feature Requests">💡 Feature Requests</option>
+                <option value="Account & Profile Settings">⚙️ Account & Profile Settings</option>
+                <option value="Partnership & Tier Levels">🏆 Partnership & Tier Levels</option>
+                <option value="General Feedback & Advisory">📝 General Feedback & Advisory</option>
               </select>
             </div>
 

@@ -20,11 +20,12 @@ model Workspace {
   updatedAt   DateTime  @updatedAt
 
   // Relations
-  saathis        Saathi[]
-  customers      Customer[]
-  commissions    Commission[]
-  tickets        SupportTicket[]
-  changeRequests ProfileChangeRequest[]
+  saathis            Saathi[]
+  customers          Customer[]
+  commissions        Commission[]
+  tickets            SupportTicket[]
+  changeRequests     ProfileChangeRequest[]
+  saathiApplications SaathiApplication[]
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -239,4 +240,51 @@ enum RequestStatus {
   pending
   approved
   rejected
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SAATHI APPLICATION — Onboarding leads application form details
+// ─────────────────────────────────────────────────────────────────────────────
+model SaathiApplication {
+  id                  String        @id @default(uuid())
+  wid                 Int                                     // Workspace association
+
+  fullName            String
+  companyName         String        @default("")
+  email               String
+  phone               String
+  pincode             String        @default("")
+  city                String        @default("")
+  state               String        @default("")
+  address             String        @default("")
+  website             String        @default("")
+  businessType        String
+  experience          String        @default("")
+  whyPartner          String        @db.Text
+
+  // Bank details
+  accountHolderName   String        @default("")
+  bankName            String        @default("")
+  accountNumber       String        @default("")
+  ifsc                String        @default("")
+  upiId               String        @default("")
+
+  // Documents
+  aadhaarNumber       String        @default("")
+  aadhaarCardUrl      String        @default("")
+  panNumber           String        @default("")
+  panCardUrl          String        @default("")
+
+  // Confirmations
+  is18Plus            Boolean       @default(true)
+  hasLaptopAndInternet Boolean      @default(true)
+
+  status              RequestStatus @default(pending)
+
+  // Relations
+  workspace           Workspace     @relation(fields: [wid], references: [wid])
+
+  // Timestamps
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 }

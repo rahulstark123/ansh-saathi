@@ -343,13 +343,6 @@ export default function CommissionsPage() {
         </div>
       </div>
 
-      {/* Payout note */}
-      <div className="p-4 rounded-xl border border-blue-500/10 bg-blue-500/5 text-xs text-blue-300 flex items-start gap-2.5">
-        <HelpCircle className="w-4 h-4 shrink-0 mt-0.5" />
-        <div>
-          <span className="font-semibold">Payout Schedule:</span> Commission ledgers generate on the 1st of every month based on active user subscriptions. Disbursements are processed on the 5th of every month directly to your registered bank account.
-        </div>
-      </div>
 
       {/* Filter and search ledger */}
       <div className="space-y-4">
@@ -474,7 +467,7 @@ export default function CommissionsPage() {
                         </div>
                         {c.paymentMode && (
                           <p className="text-[10px] text-text-muted/70 mt-0.5">
-                            Mode: <span className="font-semibold text-white/80">{c.paymentMode}</span> {c.paymentThrough && <span>({c.paymentThrough})</span>}
+                            Mode: <span className="font-semibold text-text-main">{c.paymentMode}</span> {c.paymentThrough && <span>({c.paymentThrough})</span>}
                           </p>
                         )}
                         {c.adminNote && (

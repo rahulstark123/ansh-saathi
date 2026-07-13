@@ -60,7 +60,7 @@ export default function AuthSync() {
             });
 
             setCurrentSaathiId(profile.id);
-            setRole(profile.status === 'approved' ? 'saathi' : 'saathi-pending');
+            setRole('saathi');
           } else {
             // Fallback using user metadata if profile API fetch fails
             const meta = session.user.user_metadata || {};
