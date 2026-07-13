@@ -1,0 +1,242 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WORKSPACE — Multi-tenancy root. wid auto-increments (1, 2, 3…)
+// ─────────────────────────────────────────────────────────────────────────────
+model Workspace {
+  wid         Int       @id @default(autoincrement())
+  name        String
+  slug        String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  saathis        Saathi[]
+  customers      Customer[]
+  commissions    Commission[]
+  tickets        SupportTicket[]
+  changeRequests ProfileChangeRequest[]
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SAATHI — Partner / Referring Agent
+// ─────────────────────────────────────────────────────────────────────────────
+model Saathi {
+  id             String    @id @default(uuid())
+  wid            Int                               // Workspace association
+
+  // Auth (linked to Supabase Auth user)
+  authId         String?   @unique                // Supabase auth.users.id
+  email          String    @unique
+  
+  // Profile
+  name           String
+  phone          String    @default("")
+  profession     String    @default("")
+  companyRole    String    @default("Owner")
+  pincode        String    @default("")
+  address        String    @default("")
+  city           String    @default("")
+  state          String    @default("")
+  linkedin       String    @default("")
+  profilePicture String?                          // Cloudflare R2 URL
+
+  // Status & Partner Info
+  status         SaathiStatus  @default(pending)
+  partnerCode    String?   @unique
+  joinedDate     DateTime  @default(now())
+  registrationOrder Int?                          // Position in signup queue (for commission tier logic)
+
+  // Payout Info
+  bankName       String    @default("")
+  accountNumber  String    @default("")
+  ifsc           String    @default("")
+  upiId          String    @default("")
+
+  // Emergency Contact
+  emergencyName      String    @default("")
+  emergencyPhone     String    @default("")
+  emergencyRelation  String    @default("")
+  emergencyEmail     String    @default("")
+
+  // Timestamps
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  workspace      Workspace @relation(fields: [wid], references: [wid])
+  customers      Customer[]
+  commissions    Commission[]
+  tickets        SupportTicket[]
+  changeRequests ProfileChangeRequest[]
+}
+
+enum SaathiStatus {
+  pending
+  approved
+  rejected
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CUSTOMER — Referred client company
+// ─────────────────────────────────────────────────────────────────────────────
+model Customer {
+  id             String    @id @default(uuid())
+  wid            Int                               // Workspace association
+
+  companyName    String
+  product        String                            // ANSH Tasks | ANSH HR | ANSH Expense | ANSH Visitor | ANSH Forms | ANSH Links
+  users          Int       @default(1)
+  mrr            Float     @default(0)             // Monthly Recurring Revenue (INR)
+  status         CustomerStatus @default(pending)
+  joinedDate     DateTime  @default(now())
+  commissionRate Float     @default(25)            // 40% for first 30 Saathi (promo), else 25%
+
+  companyAddress String    @default("")
+  leadSource     String    @default("")
+
+  // Relations
+  saathiId       String
+  saathi         Saathi    @relation(fields: [saathiId], references: [id])
+  workspace      Workspace @relation(fields: [wid], references: [wid])
+  commissions    Commission[]
+
+  // Timestamps
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+enum CustomerStatus {
+  pending
+  approved
+  rejected
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COMMISSION — Commission record per customer
+// ─────────────────────────────────────────────────────────────────────────────
+model Commission {
+  id              String    @id @default(uuid())
+  wid             Int                              // Workspace association
+
+  companyName     String
+  product         String
+  amount          Float
+  status          CommissionStatus @default(pending)
+  date            DateTime  @default(now())
+  paymentDate     DateTime?
+  referenceNumber String?
+
+  // Relations
+  saathiId        String
+  saathi          Saathi    @relation(fields: [saathiId], references: [id])
+  customerId      String?
+  customer        Customer? @relation(fields: [customerId], references: [id])
+  workspace       Workspace @relation(fields: [wid], references: [wid])
+
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  adminNote       String?
+  attachments     String[]
+  paymentMode     String?
+  paymentThrough  String?
+}
+
+enum CommissionStatus {
+  pending
+  approved
+  paid
+  cancelled
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SUPPORT TICKET — Saathi support requests
+// ─────────────────────────────────────────────────────────────────────────────
+model SupportTicket {
+  id       String    @id @default(uuid())
+  wid      Int                                     // Workspace association
+
+  subject  String
+  category String
+  message  String    @db.Text
+  status   TicketStatus @default(open)
+  date     DateTime  @default(now())
+
+  // Relations
+  saathiId  String
+  saathi    Saathi    @relation(fields: [saathiId], references: [id])
+  workspace Workspace @relation(fields: [wid], references: [wid])
+  replies   TicketReply[]
+
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum TicketStatus {
+  open
+  in_progress
+  resolved
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TICKET REPLY — Messages exchanged on a support ticket
+// ─────────────────────────────────────────────────────────────────────────────
+model TicketReply {
+  id        String    @id @default(uuid())
+  sender    ReplyRole
+  message   String    @db.Text
+  date      DateTime  @default(now())
+
+  // Relations
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id])
+
+  createdAt DateTime  @default(now())
+}
+
+enum ReplyRole {
+  saathi
+  admin
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROFILE CHANGE REQUEST — Partner requests profile modification
+// ─────────────────────────────────────────────────────────────────────────────
+model ProfileChangeRequest {
+  id          String        @id @default(uuid())
+  wid         Int                                     // Workspace association
+
+  subject     String                                  // Field(s) to change
+  description String        @db.Text                 // Reason / explanation
+  attachments String[]                               // Array of file URLs (max 5)
+  status      RequestStatus @default(pending)
+  adminNote   String?                                 // Admin response / note
+  date        DateTime      @default(now())
+
+  // Relations
+  saathiId    String
+  saathi      Saathi    @relation(fields: [saathiId], references: [id])
+  workspace   Workspace @relation(fields: [wid], references: [wid])
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum RequestStatus {
+  pending
+  approved
+  rejected
+}
