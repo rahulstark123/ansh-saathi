@@ -14,56 +14,66 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Check if R2 credentials are set up in the environment
-    const r2AccessKey = process.env.R2_ACCESS_KEY_ID;
-    const r2Secret = process.env.R2_SECRET_ACCESS_KEY;
-    const r2Endpoint = process.env.R2_ENDPOINT;
-    const r2Bucket = process.env.R2_BUCKET_NAME;
+    // Prefer S3_* (current .env), fall back to legacy R2_* names
+    const accessKey =
+      process.env.S3_ACCESS_KEY_ID || process.env.R2_ACCESS_KEY_ID;
+    const secretKey =
+      process.env.S3_SECRET_ACCESS_KEY || process.env.R2_SECRET_ACCESS_KEY;
+    const endpoint =
+      process.env.S3_ENDPOINT || process.env.R2_ENDPOINT;
+    const bucket =
+      process.env.S3_BUCKET_NAME || process.env.R2_BUCKET_NAME;
+    const publicBase =
+      process.env.S3_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+    const prefix = (process.env.S3_STORAGE_PREFIX || 'uploads').replace(/^\/|\/$/g, '');
+    const region = process.env.S3_REGION || 'auto';
 
     const uniqueFilename = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
 
-    if (r2AccessKey && r2Secret && r2Endpoint && r2Bucket) {
-      console.log(`[Upload API] Uploading ${file.name} to Cloudflare R2 bucket: ${r2Bucket}`);
-      
+    if (accessKey && secretKey && endpoint && bucket) {
+      console.log(`[Upload API] Uploading ${file.name} to bucket: ${bucket}`);
+
       const s3 = new S3Client({
-        region: 'auto',
-        endpoint: r2Endpoint,
+        region,
+        endpoint,
         credentials: {
-          accessKeyId: r2AccessKey,
-          secretAccessKey: r2Secret,
+          accessKeyId: accessKey,
+          secretAccessKey: secretKey,
         },
       });
 
-      const key = `uploads/${uniqueFilename}`;
-      const uploadParams = {
-        Bucket: r2Bucket,
-        Key: key,
-        Body: buffer,
-        ContentType: file.type,
-      };
+      const key = `${prefix}/${uniqueFilename}`;
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: bucket,
+          Key: key,
+          Body: buffer,
+          ContentType: file.type,
+        })
+      );
 
-      await s3.send(new PutObjectCommand(uploadParams));
+      const publicUrl = publicBase
+        ? `${publicBase.replace(/\/$/, '')}/${key}`
+        : `${endpoint.replace(/\/$/, '')}/${bucket}/${key}`;
 
-      const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL 
-        ? `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${key}`
-        : `${r2Endpoint}/${r2Bucket}/${key}`;
-
-      return NextResponse.json({ url: publicUrl, method: 'R2' });
-    } else {
-      // Fallback: Save locally in public/uploads for development/showcase
-      console.warn('[Upload API] R2 credentials missing. Saving file locally as fallback.');
-      
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      const filePath = path.join(uploadDir, uniqueFilename);
-      fs.writeFileSync(filePath, buffer);
-
-      const localUrl = `/uploads/${uniqueFilename}`;
-      return NextResponse.json({ url: localUrl, method: 'local' });
+      return NextResponse.json({ url: publicUrl, method: 's3' });
     }
+
+    // Fallback: Save locally in public/uploads for development
+    console.warn('[Upload API] S3 credentials missing. Saving file locally as fallback.');
+
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const filePath = path.join(uploadDir, uniqueFilename);
+    fs.writeFileSync(filePath, buffer);
+
+    // Always return an absolute URL using the request origin
+    const origin = req.nextUrl.origin;
+    const localUrl = `${origin}/uploads/${uniqueFilename}`;
+    return NextResponse.json({ url: localUrl, method: 'local' });
   } catch (err: any) {
     console.error('[Upload API] Error:', err);
     return NextResponse.json({ error: err.message || 'Upload failed' }, { status: 500 });

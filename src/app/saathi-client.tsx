@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import SaathiBharatNetwork from "./saathi-bharat-network";
 import { SiteFooter } from "@/components/site-footer";
+import { TrustCompliance } from "@/components/trust-compliance";
 
 const TRANSLATIONS = {
   en: {
@@ -52,6 +53,15 @@ const TRANSLATIONS = {
     journeyDesc: "From apply to grow together",
     faq: "FAQ",
     frequentlyAskedQuestions: "Frequently Asked Questions",
+    trustLabel: "Trust & Compliance",
+    trustTitle: "ANSH Apps",
+    trustTagline: "Built for Bharat, ready for the world",
+    trustDescription:
+      "ANSH Apps is a Government of India MSME-registered software company building simple, affordable, and modern business software for teams, startups, and growing businesses.",
+    trustMsmeTitle: "MSME Registered Enterprise",
+    trustMsmeSubtitle: "Government of India Udyam Registered",
+    trustUdyamLabel: "Udyam Registration Number",
+    trustGstinLabel: "GSTIN",
     joinAnshSaathi: "Join ANSH Saathi",
     applyFoundingSaathi: "Apply to become a Founding Saathi",
     applyDesc: "Tell us about yourself and why you want to walk this journey with ANSH. We review every application and reach out with next steps for training and onboarding.",
@@ -208,6 +218,15 @@ const TRANSLATIONS = {
     journeyDesc: "आवेदन से लेकर मिलकर बढ़ने तक",
     faq: "सामान्य प्रश्न",
     frequentlyAskedQuestions: "अक्सर पूछे जाने वाले प्रश्न",
+    trustLabel: "विश्वास और अनुपालन",
+    trustTitle: "ANSH Apps",
+    trustTagline: "भारत के लिए निर्मित, दुनिया के लिए तैयार",
+    trustDescription:
+      "ANSH Apps भारत सरकार की MSME-पंजीकृत सॉफ़्टवेयर कंपनी है जो टीमों, स्टार्टअप्स और बढ़ते व्यवसायों के लिए सरल, किफायती और आधुनिक व्यावसायिक सॉफ़्टवेयर बनाती है।",
+    trustMsmeTitle: "MSME पंजीकृत उद्यम",
+    trustMsmeSubtitle: "भारत सरकार उद्यम पंजीकृत",
+    trustUdyamLabel: "उद्यम पंजीकरण संख्या",
+    trustGstinLabel: "GSTIN",
     joinAnshSaathi: "ANSH साथी से जुड़ें",
     applyFoundingSaathi: "संस्थापक साथी बनने के लिए आवेदन करें",
     applyDesc: "हमें अपने बारे में बताएं और आप ANSH के साथ इस यात्रा पर क्यों चलना चाहते हैं। हम प्रत्येक आवेदन की समीक्षा करते हैं और प्रशिक्षण और ऑनबोर्डिंग के लिए अगले कदमों के साथ संपर्क करते हैं।",
@@ -1225,6 +1244,17 @@ export default function SaathiClient() {
         </div>
       </section>
 
+      <TrustCompliance
+        label={t.trustLabel}
+        title={t.trustTitle}
+        tagline={t.trustTagline}
+        description={t.trustDescription}
+        msmeTitle={t.trustMsmeTitle}
+        msmeSubtitle={t.trustMsmeSubtitle}
+        udyamLabel={t.trustUdyamLabel}
+        gstinLabel={t.trustGstinLabel}
+      />
+
       {/* Application Form */}
       <section id="apply" className="py-20 md:py-28 relative z-10 bg-[#111114] border-y border-white/5">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/10 blur-[130px] rounded-full pointer-events-none" />
@@ -1852,7 +1882,7 @@ export default function SaathiClient() {
         </div>
       </section>
 
-      <SiteFooter showRoadmap={false} />
+      <SiteFooter msmeHref="#trust-compliance" showRoadmap={false} />
 
       {/* Coming Soon Modal */}
       {isComingSoonOpen && (
