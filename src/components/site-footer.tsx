@@ -22,7 +22,7 @@ export function SiteFooter({
             ANSH Apps
           </p>
           <p className="footer-tagline mt-3 md:mt-5 font-black tracking-tighter font-outfit leading-none text-shimmer-white text-lg sm:text-2xl md:text-3xl lg:text-4xl uppercase">
-            Built for Bharat, Ready for the world
+            Built for every business. Ready for what&apos;s next.
           </p>
         </div>
 
@@ -238,7 +238,7 @@ export function SiteFooter({
             </div>
           </div>
           <p className="text-[11px] text-gray-600 leading-normal max-w-4xl">
-            India map illustration is used solely to represent ANSH's vision of connecting businesses across Bharat and does not imply any government affiliation or endorsement.
+            The network illustration represents ANSH&apos;s vision of connecting businesses and partners worldwide and does not imply any government affiliation or endorsement.
           </p>
           <p className="text-xs text-gray-500">© 2026 ANSH Apps. All rights reserved.</p>
         </div>

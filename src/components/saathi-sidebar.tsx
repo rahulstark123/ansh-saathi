@@ -94,7 +94,7 @@ export default function SaathiSidebar({ onCloseMobile }: SidebarProps) {
         })}
       </nav>
 
-      {/* User Card & Bharat Footer */}
+      {/* User card and global network footer */}
       <div className="p-4 border-t border-glass-border bg-bg-accent/40">
         <div className="flex items-center gap-3 mb-4 p-2 rounded-xl bg-white/[0.02] border border-glass-border">
           <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-semibold text-white">
@@ -120,10 +120,10 @@ export default function SaathiSidebar({ onCloseMobile }: SidebarProps) {
         <div className="mt-4 pt-3 border-t border-glass-border/40 text-center">
           <div className="flex items-center justify-center gap-1 text-[10px] text-text-muted font-outfit uppercase tracking-widest font-bold">
             <MapPin className="w-3 h-3 text-secondary animate-pulse" />
-            <span>Bharat Network</span>
+            <span>Global Partner Network</span>
           </div>
           <p className="text-[9px] text-text-muted/60 mt-1 italic font-sans">
-            Saath Chalein. Saath Badhein.
+            Walk Together. Grow Together.
           </p>
         </div>
       </div>

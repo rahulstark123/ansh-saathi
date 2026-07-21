@@ -35,17 +35,17 @@ export interface TierConfig {
 
 export const TIERS = {
   SAMRAT_1: {
-    name: 'Bharat Samrat I',
+    name: 'Global Vanguard I',
     minReferrals: 100,
     minEarnings: 125000,
     color: 'text-amber-400 font-extrabold',
     bg: 'bg-amber-500/25 shadow-[0_0_15px_rgba(245,158,11,0.2)]',
     border: 'border-amber-500/50',
-    description: 'The ultimate tier representing legendary enterprise builders and master partners in Bharat.',
+    description: 'The ultimate tier for exceptional enterprise builders and master partners across the global network.',
     benefits: '25% recurring commissions, invite-only annual luxury retreat, direct product advisory board seat.'
   },
   SAMRAT_2: {
-    name: 'Bharat Samrat II',
+    name: 'Global Vanguard II',
     minReferrals: 75,
     minEarnings: 100000,
     color: 'text-amber-400 font-bold',
@@ -55,7 +55,7 @@ export const TIERS = {
     benefits: '22% recurring commissions, fast-track premium customer support channels.'
   },
   SAMRAT_3: {
-    name: 'Bharat Samrat III',
+    name: 'Global Vanguard III',
     minReferrals: 50,
     minEarnings: 75000,
     color: 'text-amber-500 font-semibold',
@@ -91,7 +91,7 @@ export const TIERS = {
     color: 'text-rose-400',
     bg: 'bg-rose-500/10',
     border: 'border-rose-500/20',
-    description: 'Brave regional consultants taking their first steps to digitize Indian businesses.',
+    description: 'Bold consultants taking their first steps to help businesses modernize.',
     benefits: '12% recurring commissions, access to partner marketing library.'
   },
   AARAMBH: {
@@ -259,13 +259,13 @@ export default function LeaderboardView({ isAdmin = false }: LeaderboardViewProp
         <div>
           <h2 className="text-2xl font-bold font-outfit text-white flex flex-wrap items-center gap-2.5">
             <Trophy className="w-6 h-6 text-amber-400 shrink-0" />
-            <span>Bharat Saathi Leaderboard</span>
+            <span>Global Saathi Leaderboard</span>
             <span className="bg-primary/20 text-primary-bright font-bold px-2.5 py-1 rounded-xl text-xs border border-primary/30 shrink-0">
               {totalRegistered} Registered Partners
             </span>
           </h2>
           <p className="text-xs text-text-muted mt-1">
-            Celebrating regional consultants and advisors driving business digitization across India.
+            Celebrating consultants and advisors driving business growth around the world.
           </p>
         </div>
         <button
@@ -380,7 +380,7 @@ export default function LeaderboardView({ isAdmin = false }: LeaderboardViewProp
                     <th className="pb-3 pl-4 w-16">Rank</th>
                     <th className="pb-3">Partner Name</th>
                     <th className="pb-3">Profession & Designation</th>
-                    <th className="pb-3">Indian Rank Tier</th>
+                    <th className="pb-3">Global Rank Tier</th>
                     <th className="pb-3 text-center">Active Clients</th>
                     <th className="pb-3 text-right">Monthly Recurring</th>
                     <th className="pb-3 text-right pr-4">Total Paid Out</th>
@@ -517,7 +517,7 @@ export default function LeaderboardView({ isAdmin = false }: LeaderboardViewProp
               <div className="flex justify-between items-center pb-3 border-b border-glass-border">
                 <h3 className="text-lg font-bold font-outfit text-white flex items-center gap-2">
                   <Award className="w-5 h-5 text-amber-400" />
-                  <span>Bharat Ranking System Explained</span>
+                  <span>Global Ranking System Explained</span>
                 </h3>
                 <button 
                   onClick={() => setShowInfoModal(false)}
@@ -529,7 +529,7 @@ export default function LeaderboardView({ isAdmin = false }: LeaderboardViewProp
 
               <div className="space-y-4">
                 <p className="text-xs text-text-muted leading-relaxed">
-                  Our ranking system takes inspiration from traditional Indian values of dedication (Karma), focus (Arjuna), valour (Yoddha), and excellence (Samrat). Tiers are unlocked automatically as active clients or monthly recurring earnings grow.
+                  Our ranking system celebrates dedication, focus, courage, and excellence. Tiers are unlocked automatically as active clients or monthly recurring earnings grow.
                 </p>
 
                 <div className="space-y-3.5">

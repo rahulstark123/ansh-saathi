@@ -132,7 +132,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <h3 className="text-3xl font-bold font-outfit text-white">{totalPartners}</h3>
-            <p className="text-[10px] text-purple-400 mt-1">across all Bharat regions</p>
+            <p className="text-[10px] text-purple-400 mt-1">across the global partner network</p>
           </div>
         </div>
 

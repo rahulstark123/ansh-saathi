@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import SaathiBharatNetwork from "./saathi-bharat-network";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
+import SaathiGlobeNetwork from "./saathi-globe-network";
 import { SiteFooter } from "@/components/site-footer";
 import { TrustCompliance } from "@/components/trust-compliance";
 
@@ -15,19 +17,19 @@ const TRANSLATIONS = {
     backHome: "Back to Home",
     anshSaathi: "ANSH Saathi",
     becomeAn: "Become an",
-    saathChalein: "Saath Chalein. Saath Badhein.",
-    heroDesc: "Walk alongside Indian businesses. Help MSMEs grow with simple software — and build your own recurring income on the same journey.",
+    saathChalein: "Walk Together. Grow Together.",
+    heroDesc: "Walk alongside businesses worldwide. Help growing teams thrive with simple software — and build your own recurring income on the same journey.",
     affiliateNote: "ANSH Saathi is not an affiliate program. Saathis walk with businesses — generate leads, demo products, and close customers. Founding Saathi benefits are limited to the first 20 approved members.",
     whatSaathiMeans: "What Saathi Means",
-    saathiDefinitionTitle: "In India, a Saathi is not just a partner.",
+    saathiDefinitionTitle: "A Saathi is more than just a partner.",
     saathiDefinitionDesc1: "A Saathi is someone who walks alongside you, supports your journey, and grows together with you.",
-    saathiDefinitionDesc2: "ANSH Saathi represents people who believe in supporting Indian businesses — helping MSMEs discover better ways of working, while building their own recurring income. This is about connection, trust, and shared growth — not just commissions.",
+    saathiDefinitionDesc2: "ANSH Saathi represents people who believe in supporting businesses everywhere — helping growing teams discover better ways of working while building their own recurring income. This is about connection, trust, and shared growth — not just commissions.",
     aboutAnshTitle: "About ANSH Apps",
     aboutAnshDesc: "Simple, affordable business software for MSMEs and growing businesses.",
-    aboutAnshSub: "Built for Bharat. Ready for the World.",
+    aboutAnshSub: "Built for every business. Ready for what's next.",
     aboutAnshFooter: "You walk with the customer. We build and support the software.",
     whyBecomeSaathi: "Why Become a Saathi?",
-    whyBecomeSaathiDesc: "Grow with Bharat's businesses — not just from them",
+    whyBecomeSaathiDesc: "Grow with businesses worldwide — not just from them",
     foundingOffer: "Founding Saathi Offer",
     commissionStructure: "Commission Structure",
     commissionLimit: "Limited to the first 20 Saathis only.",
@@ -46,16 +48,16 @@ const TRANSLATIONS = {
     weBuildSupport: "“You walk with the customer. We build and support the software.”",
     whoCanBecomeSaathi: "Who Can Become a Saathi?",
     anyoneCanBecome: "Anyone can become an ANSH Saathi",
-    builtForPeople: "Built for people who stand with Bharat's businesses",
+    builtForPeople: "Built for people who stand with growing businesses everywhere",
     noTechBackground: "No technical background required. If you help businesses solve problems, create opportunities, or grow, you can become an ANSH Saathi.",
-    togetherSmarterBharat: "Together, let's build a smarter Bharat.",
+    togetherSmarterBharat: "Together, let's build a smarter business world.",
     saathiJourney: "Saathi Journey",
     journeyDesc: "From apply to grow together",
     faq: "FAQ",
     frequentlyAskedQuestions: "Frequently Asked Questions",
     trustLabel: "Trust & Compliance",
     trustTitle: "ANSH Apps",
-    trustTagline: "Built for Bharat, ready for the world",
+    trustTagline: "Built for every business. Ready for what's next.",
     trustDescription:
       "ANSH Apps is a Government of India MSME-registered software company building simple, affordable, and modern business software for teams, startups, and growing businesses.",
     trustMsmeTitle: "MSME Registered Enterprise",
@@ -75,7 +77,7 @@ const TRANSLATIONS = {
     formEmail: "Email Address *",
     formEmailPlaceholder: "you@company.com",
     formPhone: "Phone Number *",
-    formPhonePlaceholder: "10-digit number",
+    formPhonePlaceholder: "Phone number",
     formCity: "City *",
     formCityPlaceholder: "Your city",
     formWebsite: "Website / LinkedIn Profile",
@@ -85,19 +87,19 @@ const TRANSLATIONS = {
     formExperience: "Experience in Sales or Consulting",
     formExperiencePlaceholder: "Briefly share your relevant experience",
     formWhySaathi: "Why do you want to become an ANSH Saathi? *",
-    formWhySaathiPlaceholder: "Share what draws you to this journey — supporting MSMEs, building income, or growing with Bharat",
+    formWhySaathiPlaceholder: "Share what draws you to this journey — supporting businesses, building income, or growing globally",
     btnSubmit: "Apply to Become a Saathi",
     btnSubmitting: "Sending...",
     submitSuccessTitle: "Welcome to the journey",
     submitSuccessDesc: "Thank you, {name}. We'll review your Saathi application and get back to you soon.",
     btnScheduleCall: "Schedule a Call",
     readyToWalk: "Ready to walk this journey with ANSH?",
-    readyToWalkDesc: "Join the Founding ANSH Saathi circle. Support Indian businesses with better software — and grow your recurring income alongside them.",
+    readyToWalkDesc: "Join the Founding ANSH Saathi circle. Support businesses worldwide with better software — and grow your recurring income alongside them.",
     scheduleCall: "Schedule a Call",
     validation: {
       fullName: "Please enter your full name",
       email: "Please enter a valid email address",
-      phone: "Please enter a valid 10-digit phone number",
+      phone: "Please enter a valid phone number",
       city: "Please enter your city",
       businessType: "Please select your business type",
       whyPartner: "Please tell us why you want to become a Saathi"
@@ -119,7 +121,7 @@ const TRANSLATIONS = {
       "ANSH Links",
     ],
     benefits: [
-      "Walk alongside Indian businesses as they grow",
+      "Walk alongside businesses worldwide as they grow",
       "Earn recurring income while creating real impact",
       "Help MSMEs adopt simple, affordable software",
       "Dedicated Saathi support from ANSH",
@@ -181,18 +183,18 @@ const TRANSLATIONS = {
     anshSaathi: "ANSH साथी",
     becomeAn: "बनें",
     saathChalein: "साथ चलें। साथ बढ़ें।",
-    heroDesc: "भारतीय व्यवसायों के साथ चलें। सरल सॉफ़्टवेयर के साथ MSMEs को आगे बढ़ने में मदद करें — और उसी यात्रा पर अपनी खुद की आवर्ती आय (recurring income) बनाएं।",
+    heroDesc: "दुनिया भर के व्यवसायों के साथ चलें। सरल सॉफ़्टवेयर से बढ़ती टीमों को आगे बढ़ने में मदद करें — और उसी यात्रा पर अपनी खुद की आवर्ती आय (recurring income) बनाएं।",
     affiliateNote: "ANSH साथी कोई एफिलिएट प्रोग्राम नहीं है। साथी व्यवसायों के साथ चलते हैं — लीड उत्पन्न करते हैं, उत्पादों का डेमो देते हैं, और ग्राहकों को क्लोज करते हैं। संस्थापक साथी के लाभ केवल पहले 20 स्वीकृत सदस्यों तक सीमित हैं।",
     whatSaathiMeans: "साथी का अर्थ",
-    saathiDefinitionTitle: "भारत में, साथी केवल एक पार्टनर नहीं होता।",
+    saathiDefinitionTitle: "एक साथी केवल पार्टनर नहीं, उससे कहीं बढ़कर होता है।",
     saathiDefinitionDesc1: "एक साथी वह होता है जो आपके साथ चलता है, आपकी यात्रा का समर्थन करता है, और मिलकर आपके साथ आगे बढ़ता है।",
-    saathiDefinitionDesc2: "ANSH साथी उन लोगों का प्रतिनिधित्व करता है जो भारतीय व्यवसायों का समर्थन करने में विश्वास रखते हैं — MSMEs को काम करने के बेहतर तरीकों की खोज करने में मदद करते हुए, अपनी खुद की आवर्ती आय का निर्माण करते हैं। यह कनेक्शन, विश्वास और साझा विकास के बारे में है — केवल कमीशन के बारे में नहीं।",
+    saathiDefinitionDesc2: "ANSH साथी उन लोगों का प्रतिनिधित्व करता है जो दुनिया भर के व्यवसायों का समर्थन करने में विश्वास रखते हैं — बढ़ती टीमों को काम करने के बेहतर तरीके खोजने में मदद करते हुए अपनी आवर्ती आय बनाते हैं। यह जुड़ाव, विश्वास और साझा विकास के बारे में है — केवल कमीशन के बारे में नहीं।",
     aboutAnshTitle: "ANSH ऐप्स के बारे में",
     aboutAnshDesc: "MSMEs और बढ़ते व्यवसायों के लिए सरल, किफायती व्यावसायिक सॉफ़्टवेयर।",
-    aboutAnshSub: "भारत के लिए निर्मित। विश्व के लिए तैयार।",
+    aboutAnshSub: "हर व्यवसाय के लिए निर्मित। भविष्य के लिए तैयार।",
     aboutAnshFooter: "आप ग्राहक के साथ चलते हैं। हम सॉफ़्टवेयर का निर्माण और समर्थन करते हैं।",
     whyBecomeSaathi: "साथी क्यों बनें?",
-    whyBecomeSaathiDesc: "भारत के व्यवसायों के साथ बढ़ें — केवल उनसे नहीं",
+    whyBecomeSaathiDesc: "दुनिया भर के व्यवसायों के साथ बढ़ें — केवल उनसे नहीं",
     foundingOffer: "संस्थापक साथी ऑफर",
     commissionStructure: "कमीशन संरचना",
     commissionLimit: "केवल पहले 20 साथियों तक सीमित।",
@@ -211,16 +213,16 @@ const TRANSLATIONS = {
     weBuildSupport: "“आप ग्राहक के साथ चलते हैं। हम सॉफ़्टवेयर का निर्माण और समर्थन करते हैं।”",
     whoCanBecomeSaathi: "साथी कौन बन सकता है?",
     anyoneCanBecome: "कोई भी ANSH साथी बन सकता है",
-    builtForPeople: "उन लोगों के लिए निर्मित जो भारत के व्यवसायों के साथ खड़े हैं",
+    builtForPeople: "उन लोगों के लिए निर्मित जो हर जगह बढ़ते व्यवसायों के साथ खड़े हैं",
     noTechBackground: "किसी तकनीकी पृष्ठभूमि की आवश्यकता नहीं है। यदि आप व्यवसायों को समस्याओं को हल करने, अवसर पैदा करने या बढ़ने में मदद करते हैं, तो आप ANSH साथी बन सकते हैं।",
-    togetherSmarterBharat: "आइए मिलकर एक स्मार्ट भारत का निर्माण करें।",
+    togetherSmarterBharat: "आइए मिलकर एक बेहतर व्यावसायिक दुनिया बनाएं।",
     saathiJourney: "साथी यात्रा",
     journeyDesc: "आवेदन से लेकर मिलकर बढ़ने तक",
     faq: "सामान्य प्रश्न",
     frequentlyAskedQuestions: "अक्सर पूछे जाने वाले प्रश्न",
     trustLabel: "विश्वास और अनुपालन",
     trustTitle: "ANSH Apps",
-    trustTagline: "भारत के लिए निर्मित, दुनिया के लिए तैयार",
+    trustTagline: "हर व्यवसाय के लिए निर्मित, भविष्य के लिए तैयार",
     trustDescription:
       "ANSH Apps भारत सरकार की MSME-पंजीकृत सॉफ़्टवेयर कंपनी है जो टीमों, स्टार्टअप्स और बढ़ते व्यवसायों के लिए सरल, किफायती और आधुनिक व्यावसायिक सॉफ़्टवेयर बनाती है।",
     trustMsmeTitle: "MSME पंजीकृत उद्यम",
@@ -240,7 +242,7 @@ const TRANSLATIONS = {
     formEmail: "ईमेल पता *",
     formEmailPlaceholder: "you@company.com",
     formPhone: "फ़ोन नंबर *",
-    formPhonePlaceholder: "10-अंकीय नंबर",
+    formPhonePlaceholder: "फ़ोन नंबर",
     formCity: "शहर *",
     formCityPlaceholder: "आपका शहर",
     formWebsite: "वेबसाइट / लिंक्डइन प्रोफाइल",
@@ -250,19 +252,19 @@ const TRANSLATIONS = {
     formExperience: "बिक्री या परामर्श में अनुभव",
     formExperiencePlaceholder: "संक्षेप में अपना प्रासंगिक अनुभव साझा करें",
     formWhySaathi: "आप ANSH साथी क्यों बनना चाहते हैं? *",
-    formWhySaathiPlaceholder: "साझा करें कि क्या आपको इस यात्रा की ओर आकर्षित करता है — MSMEs का समर्थन करना, आय का निर्माण करना, या भारत के साथ बढ़ना",
+    formWhySaathiPlaceholder: "साझा करें कि क्या आपको इस यात्रा की ओर आकर्षित करता है — व्यवसायों का समर्थन करना, आय बनाना, या वैश्विक स्तर पर बढ़ना",
     btnSubmit: "साथी बनने के लिए आवेदन करें",
     btnSubmitting: "भेज रहा है...",
     submitSuccessTitle: "यात्रा में आपका स्वागत है",
     submitSuccessDesc: "धन्यवाद, {name}। हम आपके साथी आवेदन की समीक्षा करेंगे और जल्द ही आपसे संपर्क करेंगे।",
     btnScheduleCall: "कॉल शेड्यूल करें",
     readyToWalk: "ANSH के साथ इस यात्रा पर चलने के लिए तैयार हैं?",
-    readyToWalkDesc: "संस्थापक ANSH साथी सर्कल में शामिल हों। बेहतर सॉफ़्टवेयर के साथ भारतीय व्यवसायों का समर्थन करें — और उनके साथ अपनी आवर्ती आय बढ़ाएं।",
+    readyToWalkDesc: "संस्थापक ANSH साथी सर्कल में शामिल हों। बेहतर सॉफ़्टवेयर से दुनिया भर के व्यवसायों का समर्थन करें — और उनके साथ अपनी आवर्ती आय बढ़ाएं।",
     scheduleCall: "कॉल शेड्यूल करें",
     validation: {
       fullName: "कृपया अपना पूरा नाम दर्ज करें",
       email: "कृपया एक मान्य ईमेल पता दर्ज करें",
-      phone: "कृपया एक मान्य 10-अंकीय फ़ोन नंबर दर्ज करें",
+      phone: "कृपया एक मान्य फ़ोन नंबर दर्ज करें",
       city: "कृपया अपना शहर दर्ज करें",
       businessType: "कृपया अपना व्यवसाय प्रकार चुनें",
       whyPartner: "कृपया हमें बताएं कि आप साथी क्यों बनना चाहते हैं"
@@ -284,7 +286,7 @@ const TRANSLATIONS = {
       "ANSH Links",
     ],
     benefits: [
-      "भारतीय व्यवसायों के बढ़ने के साथ-साथ उनके साथ चलें",
+      "दुनिया भर के व्यवसायों के बढ़ने के साथ-साथ उनके साथ चलें",
       "वास्तविक प्रभाव पैदा करते हुए आवर्ती आय अर्जित करें",
       "MSMEs को सरल, किफायती सॉफ़्टवेयर अपनाने में मदद करें",
       "ANSH से समर्पित साथी सहायता",
@@ -464,6 +466,17 @@ export default function SaathiClient() {
     }
   };
 
+  const handlePhoneChange = (phone: string) => {
+    setFormData((prev) => ({ ...prev, phone }));
+    if (formErrors.phone) {
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next.phone;
+        return next;
+      });
+    }
+  };
+
   const handlePincodeChange = async (val: string) => {
     const cleanVal = val.replace(/\D/g, "").slice(0, 6);
     setFormData((prev) => ({ ...prev, pincode: cleanVal }));
@@ -624,7 +637,8 @@ export default function SaathiClient() {
     const errors: Record<string, string> = {};
     if (!formData.fullName.trim()) errors.fullName = "Please enter your full name";
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Please enter a valid email address";
-    if (!formData.phone.trim() || formData.phone.trim().length !== 10) errors.phone = "Please enter a valid 10-digit phone number";
+    const phoneDigits = formData.phone.replace(/\D/g, "");
+    if (phoneDigits.length < 8 || phoneDigits.length > 15) errors.phone = "Please enter a valid phone number";
     if (!formData.pincode.trim() || formData.pincode.trim().length !== 6) errors.pincode = "Please enter a valid 6-digit pincode";
     if (!formData.city.trim()) errors.city = "Please enter your city";
     if (!formData.state.trim()) errors.state = "Please enter your state";
@@ -881,7 +895,7 @@ export default function SaathiClient() {
             <div className="reveal min-w-0">
               <h1 className="text-4xl md:text-5xl xl:text-6xl font-extrabold leading-[1.08] mb-4">
                 <span className="block">
-                  {t.becomeAn} <span className="tricolor-shine-text">{t.anshSaathi}</span>
+                  {t.becomeAn} <span className="global-shine-text">{t.anshSaathi}</span>
                 </span>
               </h1>
               <p className="text-xl md:text-2xl font-semibold text-white/90 mb-6 font-outfit tracking-wide">
@@ -938,7 +952,7 @@ export default function SaathiClient() {
             </div>
 
             <div className="reveal relative flex justify-end items-center lg:-mr-8 xl:-mr-16 2xl:-mr-24">
-              <SaathiBharatNetwork lang={lang} />
+              <SaathiGlobeNetwork lang={lang} />
             </div>
           </div>
         </div>
@@ -951,7 +965,7 @@ export default function SaathiClient() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_70%,rgba(19,136,8,0.1),transparent_42%)] pointer-events-none" />
 
         <div className="page-container max-w-4xl mx-auto text-center reveal relative z-10">
-          <span className="text-[#FF9933] font-semibold uppercase tracking-widest text-sm mb-4 block">
+          <span className="text-indigo-400 font-semibold uppercase tracking-widest text-sm mb-4 block">
             {t.whatSaathiMeans}
           </span>
           <h2 className="text-3xl md:text-5xl font-extrabold mb-5 leading-tight text-white">
@@ -962,9 +976,9 @@ export default function SaathiClient() {
             className="mx-auto mb-8 flex h-1 w-28 overflow-hidden rounded-full"
             aria-hidden="true"
           >
-            <span className="flex-1 bg-[#FF9933]" />
-            <span className="flex-1 bg-white/90" />
-            <span className="flex-1 bg-[#138808]" />
+            <span className="flex-1 bg-indigo-500" />
+            <span className="flex-1 bg-purple-500" />
+            <span className="flex-1 bg-cyan-400" />
           </div>
 
           <p className="text-gray-200 text-lg md:text-xl leading-relaxed mb-6">
@@ -973,7 +987,7 @@ export default function SaathiClient() {
           <p className="text-gray-400 text-base md:text-lg leading-relaxed max-w-3xl mx-auto">
             <span className="text-white font-semibold">{t.anshSaathi}</span> {t.saathiDefinitionDesc2}
           </p>
-          <p className="mt-10 text-2xl md:text-3xl font-extrabold font-outfit bg-gradient-to-r from-[#FF9933] via-white to-[#138808] bg-clip-text text-transparent">
+          <p className="mt-10 text-2xl md:text-3xl font-extrabold font-outfit bg-gradient-to-r from-indigo-400 via-purple-300 to-cyan-400 bg-clip-text text-transparent">
             {t.saathChalein}
           </p>
         </div>
@@ -1144,14 +1158,14 @@ export default function SaathiClient() {
               {t.anyoneCanBecome}
             </h2>
 
-            {/* Subtle Indian tricolor accent */}
+            {/* Global partnership accent */}
             <div
               className="mx-auto mb-8 flex h-1 w-28 overflow-hidden rounded-full"
               aria-hidden="true"
             >
-              <span className="flex-1 bg-[#FF9933]" />
-              <span className="flex-1 bg-white/90" />
-              <span className="flex-1 bg-[#138808]" />
+              <span className="flex-1 bg-indigo-500" />
+              <span className="flex-1 bg-purple-500" />
+              <span className="flex-1 bg-cyan-400" />
             </div>
 
             <p className="text-white text-lg md:text-xl font-semibold mb-4">
@@ -1160,7 +1174,7 @@ export default function SaathiClient() {
             <p className="text-gray-400 text-base md:text-lg leading-relaxed mb-6">
               {t.noTechBackground}
             </p>
-            <p className="text-base md:text-lg font-semibold bg-gradient-to-r from-[#FF9933] via-white to-[#138808] bg-clip-text text-transparent">
+            <p className="text-base md:text-lg font-semibold bg-gradient-to-r from-indigo-400 via-purple-300 to-cyan-400 bg-clip-text text-transparent">
               {t.togetherSmarterBharat}
             </p>
           </div>
@@ -1285,14 +1299,14 @@ export default function SaathiClient() {
                 </li>
               </ul>
 
-              {/* Bharat Bhagya Vidhata Text */}
+              {/* Global partnership message */}
               <div className="mt-14 p-8 rounded-3xl bg-white/[0.02] border border-white/5 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-28 h-28 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500" />
                 <h4 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-orange-400 via-white to-emerald-400 bg-clip-text text-transparent tracking-wider uppercase mb-3">
-                  Bharat Bhagya Vidhata
+                  Partners Without Borders
                 </h4>
                 <p className="text-xs md:text-sm text-gray-400 font-medium leading-relaxed tracking-wide">
-                  Let's shape the destiny of India, together.
+                  Let&apos;s shape the future of business, together.
                 </p>
               </div>
             </div>
@@ -1389,20 +1403,28 @@ export default function SaathiClient() {
                             <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
                               {t.formPhone}
                             </label>
-                            <div className="relative">
-                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
-                                +91
-                              </span>
-                              <input
-                                type="tel"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                                maxLength={10}
-                                placeholder={t.formPhonePlaceholder}
-                                className={`${inputClass("phone")} !pl-14`}
-                              />
-                            </div>
+                            <PhoneInput
+                              defaultCountry="in"
+                              value={formData.phone}
+                              onChange={handlePhoneChange}
+                              placeholder={t.formPhonePlaceholder}
+                              className={`saathi-phone-input ${formErrors.phone ? "saathi-phone-input--error" : ""}`}
+                              inputClassName="saathi-phone-input__field"
+                              countrySelectorStyleProps={{
+                                buttonClassName: "saathi-phone-input__selector",
+                              }}
+                              inputProps={{
+                                name: "phone",
+                                autoComplete: "tel",
+                              }}
+                              style={{
+                                width: "100%",
+                                ["--react-international-phone-background-color" as string]: "rgba(255,255,255,0.03)",
+                                ["--react-international-phone-text-color" as string]: "#ffffff",
+                                ["--react-international-phone-border-color" as string]: "rgba(255,255,255,0.1)",
+                                ["--react-international-phone-height" as string]: "46px",
+                              }}
+                            />
                             {formErrors.phone && (
                               <p className="text-xs text-red-400">{formErrors.phone}</p>
                             )}

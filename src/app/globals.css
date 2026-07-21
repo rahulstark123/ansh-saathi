@@ -310,23 +310,23 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-text-fill-color: transparent;
 }
 
-.tricolor-shine-text {
+.global-shine-text {
   background: linear-gradient(
     90deg,
-    #FF9933 0%,
-    #F8FAFC 25%,
-    #22C55E 50%,
-    #F8FAFC 75%,
-    #FF9933 100%
+    #6366F1 0%,
+    #A855F7 25%,
+    #22D3EE 50%,
+    #A855F7 75%,
+    #6366F1 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: tricolor-shine 4s linear infinite;
+  animation: global-shine 4s linear infinite;
 }
 
-@keyframes tricolor-shine {
+@keyframes global-shine {
   to {
     background-position: -200% center;
   }
@@ -451,4 +451,111 @@ h1, h2, h3, h4, h5, h6 {
 .reveal.active {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* react-international-phone: force dark glass theme to match form inputs */
+.saathi-phone-input.react-international-phone-input-container {
+  display: flex !important;
+  width: 100% !important;
+  --react-international-phone-height: 46px;
+  --react-international-phone-background-color: rgba(255, 255, 255, 0.03);
+  --react-international-phone-text-color: #ffffff;
+  --react-international-phone-font-size: 0.875rem;
+  --react-international-phone-border-radius: 0.75rem;
+  --react-international-phone-border-color: rgba(255, 255, 255, 0.1);
+  --react-international-phone-country-selector-background-color: rgba(255, 255, 255, 0.03);
+  --react-international-phone-country-selector-background-color-hover: rgba(255, 255, 255, 0.06);
+  --react-international-phone-country-selector-border-color: rgba(255, 255, 255, 0.1);
+  --react-international-phone-country-selector-arrow-color: #6b7280;
+  --react-international-phone-dropdown-item-background-color: #131316;
+  --react-international-phone-dropdown-item-text-color: #e5e7eb;
+  --react-international-phone-dropdown-item-dial-code-color: #6b7280;
+  --react-international-phone-selected-dropdown-item-background-color: rgba(99, 102, 241, 0.18);
+  --react-international-phone-selected-dropdown-item-text-color: #ffffff;
+  --react-international-phone-selected-dropdown-item-dial-code-color: #a5b4fc;
+  --react-international-phone-dropdown-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.7);
+}
+
+.saathi-phone-input .react-international-phone-country-selector-button {
+  height: 46px !important;
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-right: none !important;
+  border-radius: 0.75rem 0 0 0.75rem !important;
+  padding: 0 0.65rem !important;
+}
+
+.saathi-phone-input .react-international-phone-country-selector-button:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.saathi-phone-input .react-international-phone-input {
+  width: 100% !important;
+  height: 46px !important;
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-left: none !important;
+  border-radius: 0 0.75rem 0.75rem 0 !important;
+  padding: 0 1rem 0 0.35rem !important;
+  font-size: 0.875rem !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: none !important;
+  caret-color: #ffffff;
+}
+
+.saathi-phone-input .react-international-phone-input::placeholder {
+  color: #6b7280 !important;
+  -webkit-text-fill-color: #6b7280 !important;
+  opacity: 1;
+}
+
+.saathi-phone-input .react-international-phone-input:focus {
+  outline: none !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 1px var(--primary) !important;
+}
+
+.saathi-phone-input .react-international-phone-country-selector-button:focus,
+.saathi-phone-input .react-international-phone-country-selector-button:focus-visible {
+  outline: none !important;
+  border-color: var(--primary) !important;
+}
+
+.saathi-phone-input--error .react-international-phone-country-selector-button,
+.saathi-phone-input--error .react-international-phone-input {
+  border-color: rgba(239, 68, 68, 0.5) !important;
+}
+
+.saathi-phone-input .react-international-phone-country-selector-dropdown {
+  z-index: 50 !important;
+  background-color: #131316 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0.75rem !important;
+  color: #e5e7eb !important;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.7) !important;
+}
+
+.saathi-phone-input .react-international-phone-country-selector-dropdown__list-item:hover,
+.saathi-phone-input .react-international-phone-country-selector-dropdown__list-item--focused,
+.saathi-phone-input .react-international-phone-country-selector-dropdown__list-item--selected {
+  background-color: rgba(99, 102, 241, 0.18) !important;
+}
+
+.saathi-phone-input .react-international-phone-country-selector-dropdown__list-item-country-name {
+  color: #e5e7eb !important;
+}
+
+.saathi-phone-input .react-international-phone-country-selector-dropdown__list-item-dial-code {
+  color: #6b7280 !important;
+}
+
+/* Kill browser autofill white flash on the phone field */
+.saathi-phone-input .react-international-phone-input:-webkit-autofill,
+.saathi-phone-input .react-international-phone-input:-webkit-autofill:hover,
+.saathi-phone-input .react-international-phone-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #121216 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff;
+  transition: background-color 9999s ease-in-out 0s;
 }

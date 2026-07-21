@@ -251,7 +251,7 @@ export default function AdminSaathisPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <p className="text-sm text-text-muted">
-            Manage partner onboarding profiles. Review applications from business advisors across Bharat, approve them with a unique code, or provision new accounts.
+            Manage partner onboarding profiles. Review applications from business advisors worldwide, approve them with a unique code, or provision new accounts.
           </p>
         </div>
         <button

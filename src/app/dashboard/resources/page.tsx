@@ -44,7 +44,7 @@ export default function ResourcesPage() {
       id: 'wa-1',
       title: 'WhatsApp Intro: Pitching ANSH ERP to MSMEs',
       channel: 'whatsapp',
-      text: `Hello [Client Name], Rajesh here. I have been helping regional businesses upgrade their systems lately. I recently partnered with ANSH (anshapps.com) who have built an incredibly simple, mobile-first ERP for Indian MSMEs. It covers GST billing, stock ledger, production tracker, and purchases in one clean app (no complex accounting setups required). I can schedule a free demo and get you a special founding trial. Let me know if you would like me to set this up!`
+      text: `Hello [Client Name], [Your Name] here. I have been helping growing businesses upgrade their systems lately. I recently partnered with ANSH (anshapps.com), which has built an incredibly simple, mobile-first ERP for growing teams. It covers billing, stock management, production tracking, and purchases in one clean app (no complex accounting setup required). I can schedule a free demo and get you a special founding trial. Let me know if you would like me to set this up!`
     },
     {
       id: 'wa-2',
@@ -63,8 +63,8 @@ I hope this email finds you well.
 
 As your business grows, keeping track of accounts, inventory, employee attendance, and customer leads across multiple excel sheets can become a bottleneck.
 
-I am writing to introduce you to ANSH (anshapps.com), a next-generation software suite specifically engineered for Indian MSMEs. Unlike heavy enterprise systems, ANSH offers modular apps that work seamlessly together:
-1. ANSH ERP - GST Invoicing, Stock Ledger, Purchases
+I am writing to introduce you to ANSH (anshapps.com), a next-generation software suite engineered for growing businesses worldwide. Unlike heavy enterprise systems, ANSH offers modular apps that work seamlessly together:
+1. ANSH ERP - Invoicing, Stock Management, Purchases
 2. ANSH HR - Attendance, Payroll, Leave Management
 3. ANSH CRM - Sales Leads & Deal Pipeline
 

@@ -245,7 +245,7 @@ export default function SaathiDashboard() {
             </span>
           </h2>
           <p className="text-text-muted text-sm md:text-base leading-relaxed">
-            Welcome to your founding partner workspace. You are representing the Bharat Network from <span className="text-primary-bright font-semibold">{currentSaathi?.city}</span>, helping regional enterprises grow with world-class digital tools.
+            Welcome to your founding partner workspace. You are part of the ANSH Global Partner Network in <span className="text-primary-bright font-semibold">{currentSaathi?.city}</span>, helping businesses grow with world-class digital tools.
           </p>
         </div>
 

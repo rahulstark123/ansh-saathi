@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "ANSH Saathi - Partner Portal",
-  description: "Become an ANSH Saathi, join the Bharat Network, help MSMEs grow with custom business software, and earn recurring commissions.",
+  description: "Become an ANSH Saathi, join a global partner network, help growing businesses thrive with custom software, and earn recurring commissions.",
 };
 
 export default function RootLayout({

@@ -17,7 +17,7 @@ type TrustComplianceProps = {
 export function TrustCompliance({
   label = "Trust & Compliance",
   title = "ANSH Apps",
-  tagline = "Built for Bharat, ready for the world",
+  tagline = "Built for every business. Ready for what's next.",
   description = "ANSH Apps is a Government of India MSME-registered software company building simple, affordable, and modern business software for teams, startups, and growing businesses.",
   msmeTitle = "MSME Registered Enterprise",
   msmeSubtitle = "Government of India Udyam Registered",

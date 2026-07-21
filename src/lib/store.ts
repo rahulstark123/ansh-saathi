@@ -216,7 +216,7 @@ const initialCustomers: Customer[] = [
   },
   {
     id: 'c-3',
-    companyName: 'Digital Bharat Solutions',
+    companyName: 'Digital Horizon Solutions',
     product: 'ANSH Tasks',
     users: 12,
     mrr: 6000,
@@ -319,7 +319,7 @@ const initialCommissions: Commission[] = [
   },
   {
     id: 'comm-6',
-    companyName: 'Digital Bharat Solutions',
+    companyName: 'Digital Horizon Solutions',
     product: 'ANSH Task',
     amount: 900, // 15% of 6000
     status: 'paid',
@@ -354,7 +354,7 @@ const initialCommissions: Commission[] = [
   },
   {
     id: 'comm-9',
-    companyName: 'Digital Bharat Solutions',
+    companyName: 'Digital Horizon Solutions',
     product: 'ANSH Task',
     amount: 900,
     status: 'approved',
@@ -389,7 +389,7 @@ const initialCommissions: Commission[] = [
   },
   {
     id: 'comm-12',
-    companyName: 'Digital Bharat Solutions',
+    companyName: 'Digital Horizon Solutions',
     product: 'ANSH Task',
     amount: 900,
     status: 'pending',
@@ -438,7 +438,7 @@ const initialResources: Resource[] = [
   },
   {
     id: 'res-4',
-    name: 'ANSH MSME Pricing Sheet (Indian Rupees Tiered Model)',
+    name: 'ANSH Business Pricing Sheet (Global Tiered Model)',
     type: 'pdf',
     category: 'Brochures & Pricing',
     size: '1.4 MB',
